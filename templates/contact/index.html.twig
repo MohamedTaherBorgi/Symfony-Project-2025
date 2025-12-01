@@ -1,0 +1,101 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Contact - EcoStore{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Contactez-nous</h1>
+    
+    <div class="row">
+        <!-- Contact Form -->
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Formulaire de Contact</h5>
+                    <form>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nom complet</label>
+                            <input type="text" class="form-control" id="name" placeholder="Votre nom">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Votre email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" id="phone" placeholder="Votre téléphone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Sujet</label>
+                            <input type="text" class="form-control" id="subject" placeholder="Sujet de votre message">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" rows="5" placeholder="Votre message"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Envoyer le message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Informations de Contact</h5>
+                    <div class="mb-3">
+                        <h6>Adresse</h6>
+                        <p>123 Rue de l'Écologie<br>75000 Paris, France</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Téléphone</h6>
+                        <p><a href="tel:+33123456789">+33 1 23 45 67 89</a></p>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Email</h6>
+                        <p><a href="mailto:info@ecostore.com">info@ecostore.com</a></p>
+                    </div>
+                    <div>
+                        <h6>Horaires</h6>
+                        <p>
+                            Lundi - Vendredi: 9h00 - 18h00<br>
+                            Samedi: 10h00 - 16h00<br>
+                            Dimanche: Fermé
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Social Media -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Suivez-nous</h5>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-info btn-sm">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-danger btn-sm">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-dark btn-sm">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Map Section -->
+    <div class="mt-5">
+        <h2 class="mb-4">Localisation</h2>
+        <div class="ratio ratio-16x9">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.9918256465006!2d2.2922926!3d48.8589507!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e1f06e2b70f%3A0x40b82c3688c9460!2sParis%2C%20France!5e0!3m2!1sfr!2sfr!4v1234567890" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}
