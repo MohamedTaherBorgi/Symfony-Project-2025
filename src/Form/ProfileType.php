@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 class ProfileType extends AbstractType
 {
@@ -36,9 +38,20 @@ class ProfileType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'attr' => ['class' => 'form-control'],
+            ])
+            ->add('imageFile', FileType::class, [
+                'label' => 'Profile Image',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'mimeTypes' => ['image/jpeg', 'image/png'],
+                        'mimeTypesMessage' => 'Upload a valid JPG or PNG file',
+                    ])
+                ],
+                'attr' => ['class' => 'form-control'],
             ]);
     }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

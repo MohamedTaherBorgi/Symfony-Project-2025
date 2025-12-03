@@ -37,6 +37,13 @@ class ProfileController extends AbstractController
                 );
             }
 
+            $imageFile = $form->get('imageFile')->getData();
+            if ($imageFile) {
+                $filename = uniqid().'.'.$imageFile->guessExtension();
+                $imageFile->move($this->getParameter('user_images'), $filename);
+                $user->setImage($filename);
+            }
+
             $em->persist($user);
             $em->flush();
 

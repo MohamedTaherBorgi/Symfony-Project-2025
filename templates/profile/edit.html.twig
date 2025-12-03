@@ -11,6 +11,13 @@
             <div class="card shadow-sm" style="border-radius: 15px;">
                 <div class="card-body p-4">
 
+                    <div class="text-center mb-4">
+                        <img src="/uploads/users/{{ app.user.image }}"
+                             class="rounded-circle shadow"
+                             style="width:120px; height:120px; object-fit:cover;">
+                    </div>
+
+
                     {{ form_start(form) }}
 
                     <div class="mb-3">
@@ -37,6 +44,12 @@
                         {{ form_errors(form.plainPassword) }}
                     </div>
 
+                    <div class="mb-3">
+                        {{ form_label(form.imageFile) }}
+                        {{ form_widget(form.imageFile) }}
+                        {{ form_errors(form.imageFile) }}
+                    </div>
+
                     <div class="mt-4 d-flex justify-content-between">
                         <button type="submit" class="btn btn-eco px-4">Save</button>
                         <a href="{{ path('app_home') }}" class="btn btn-outline-secondary px-4">Cancel</a>
@@ -44,7 +57,8 @@
 
                     {{ form_end(form) }}
                     <!-- Delete Button -->
-                    <button class="btn btn-danger w-100 mt-4" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                    <button class="btn btn-danger w-100 mt-4" data-bs-toggle="modal"
+                            data-bs-target="#confirmDeleteModal">
                         Delete My Account
                     </button>
 
@@ -54,11 +68,13 @@
                             <div class="modal-content" style="border-radius: 15px;">
                                 <div class="modal-header bg-danger text-white">
                                     <h5 class="modal-title">Confirm Account Deletion</h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    <button type="button" class="btn-close btn-close-white"
+                                            data-bs-dismiss="modal"></button>
                                 </div>
 
                                 <div class="modal-body">
-                                    <p>This action is permanent. All your data will be removed. Are you sure you want to continue?</p>
+                                    <p>This action is permanent. All your data will be removed. Are you sure you want to
+                                        continue?</p>
                                 </div>
 
                                 <div class="modal-footer">
