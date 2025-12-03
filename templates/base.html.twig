@@ -1,92 +1,212 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}EcoStore - Produits Éco-Friendly{% endblock %}</title>
-    
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ asset('lib/bootstrap/css/bootstrap.min.css') }}">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    
+    <title>{% block title %}EcoStore - Eco-Friendly Products{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --eco-green: #90C695;
+            --eco-dark: #5F7A61;
+            --eco-light: #E8F5E9;
+            --eco-accent: #FFB74D;
+        }
+        html, body {
+            height: 100%;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fafafa;
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1;
+        }
+        .navbar {
+            background: linear-gradient(135deg, var(--eco-green) 0%, var(--eco-dark) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            transition: all 0.3s;
+        }
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        label.form-label,
+        .form-label,
+        form label,
+        .card-body label,
+        .form-group label,
+        .col-form-label {
+            font-weight: 700 !important;
+        }
+        .modal-dialog-centered {
+            min-height: calc(100% - 1rem);
+            display: flex;
+            align-items: center;
+        }
+        .hero {
+            background: linear-gradient(135deg, var(--eco-light) 0%, #fff 100%);
+            padding: 60px 0;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+        .product-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .product-img {
+            height: 200px;
+            background: linear-gradient(135deg, var(--eco-light) 0%, #C8E6C9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+        .btn-eco {
+            background: var(--eco-green);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            transition: all 0.3s;
+        }
+        .btn-eco:hover {
+            background: var(--eco-dark);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .eco-badge {
+            background: var(--eco-accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .cart-badge {
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+        footer {
+            background: var(--eco-dark);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+    </style>
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="{{ path('app_home') }}">
-                <strong>EcoStore</strong>
-            </a>
+            <a class="navbar-brand" href="{{ path('app_home') }}">🌱 EcoStore</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
+                        <a class="nav-link" href="{{ path('app_home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_products') }}">Produits</a>
+                        <a class="nav-link" href="{{ path('product_index') }}">Products</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_about') }}">À propos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_contact') }}">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-dark text-white ms-2" href="#">Panier</a>
-                    </li>
+
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="{{ path('cart_index') }}">
+                                🛒 Cart
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('order_my_orders') }}">My Orders</a>
+                        </li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('admin_dashboard') }}">⚙️ Admin</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                               data-bs-toggle="dropdown">
+                                👤 {{ app.user.prenom }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ path('app_profile_edit') }}">Edit Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_register') }}">Register</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main>
-        {% block content %}{% endblock %}
+    <main class="container my-4">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('warning') %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        {% block body %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white mt-5 py-4">
+    <footer class="text-center">
         <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>EcoStore</h5>
-                    <p>Découvrez nos produits écologiques de qualité supérieure.</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Liens Rapides</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ path('app_home') }}" class="text-white-50">Accueil</a></li>
-                        <li><a href="{{ path('app_products') }}" class="text-white-50">Produits</a></li>
-                        <li><a href="{{ path('app_contact') }}" class="text-white-50">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Contact</h5>
-                    <p class="text-white-50">
-                        Email: info@ecostore.com<br>
-                        Téléphone: +33 1 23 45 67 89
-                    </p>
-                </div>
-            </div>
-            <hr class="bg-white-50">
-            <div class="text-center">
-                <p>&copy; 2025 EcoStore. Tous droits réservés.</p>
-            </div>
+            <p class="mb-0">🌍 EcoStore - Making the world greener, one product at a time</p>
+            <small>Built with Symfony & Love for Nature 💚</small>
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="{{ asset('lib/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    
-    <!-- Custom JS -->
-    <script src="{{ asset('js/main.js') }}"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block javascripts %}{% endblock %}
 </body>
 </html>

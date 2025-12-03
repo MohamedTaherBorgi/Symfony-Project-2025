@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add Category - Admin{% endblock %}
+
+{% block body %}
+<h1 class="mb-4">➕ Add New Category</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-eco">Create Category</button>
+                        <a href="{{ path('admin_categories') }}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

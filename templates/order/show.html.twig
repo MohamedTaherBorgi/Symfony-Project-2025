@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order {{ order.orderNumber }} - EcoStore{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="mb-4">Order {{ order.orderNumber }}</h1>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Order Details</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Date:</strong> {{ order.createdAt|date('d M Y, H:i') }}</p>
+                        <p><strong>Status:</strong> 
+                            {% if order.status == 'delivered' %}
+                                <span class="badge bg-success">Delivered</span>
+                            {% else %}
+                                <span class="badge bg-info">{{ order.status|title }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Payment:</strong> {{ order.paymentMethod|title|replace({'_': ' '}) }}</p>
+                        <p><strong>Payment Status:</strong> 
+                            <span class="badge bg-{{ order.paymentStatus == 'paid' ? 'success' : 'warning' }}">
+                                {{ order.paymentStatus|title }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Items</h5>
+                {% for item in order.orderItems %}
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                    <div>
+                        <h6 class="mb-1">{{ item.product.nom }}</h6>
+                        <small class="text-muted">Quantity: {{ item.quantity }} × {{ item.unitPrice }} TND</small>
+                    </div>
+                    <strong>{{ item.subtotal }} TND</strong>
+                </div>
+                {% endfor %}
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <strong>Total</strong>
+                    <strong class="text-success h4">{{ order.totalAmount }} TND</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Shipping Address</h5>
+                <p>{{ order.shippingAddress }}</p>
+                <p><strong>Phone:</strong> {{ order.phone }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

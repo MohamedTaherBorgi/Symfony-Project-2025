@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Orders - EcoStore{% endblock %}
+
+{% block body %}
+<h1 class="mb-4">📦 My Orders</h1>
+
+{% if orders is empty %}
+    <div class="alert alert-info text-center py-5">
+        <h3>No orders yet</h3>
+        <p>Start shopping for eco-friendly products!</p>
+        <a href="{{ path('product_index') }}" class="btn btn-eco btn-lg mt-3">Browse Products</a>
+    </div>
+{% else %}
+    {% for order in orders %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <h5 class="mb-1">{{ order.orderNumber }}</h5>
+                    <small class="text-muted">{{ order.createdAt|date('d M Y, H:i') }}</small>
+                </div>
+                <div class="col-md-2">
+                    <strong>{{ order.totalAmount }} TND</strong>
+                </div>
+                <div class="col-md-2">
+                    {% if order.status == 'pending' %}
+                        <span class="badge bg-warning">Pending</span>
+                    {% elseif order.status == 'processing' %}
+                        <span class="badge bg-info">Processing</span>
+                    {% elseif order.status == 'shipped' %}
+                        <span class="badge bg-primary">Shipped</span>
+                    {% elseif order.status == 'delivered' %}
+                        <span class="badge bg-success">Delivered</span>
+                    {% else %}
+                        <span class="badge bg-danger">{{ order.status|title }}</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted">{{ order.orderItems|length }} items</small>
+                </div>
+                <div class="col-md-2 text-end">
+                    <a href="{{ path('order_show', {id: order.id}) }}" class="btn btn-eco btn-sm">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

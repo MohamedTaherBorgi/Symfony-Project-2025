@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4 text-center">👤 Edit Profile</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card shadow-sm" style="border-radius: 15px;">
+                <div class="card-body p-4">
+
+                    {{ form_start(form) }}
+
+                    <div class="mb-3">
+                        {{ form_label(form.prenom) }}
+                        {{ form_widget(form.prenom, { attr: { class: 'form-control' } }) }}
+                        {{ form_errors(form.prenom) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.nom) }}
+                        {{ form_widget(form.nom, { attr: { class: 'form-control' } }) }}
+                        {{ form_errors(form.nom) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email, { attr: { class: 'form-control' } }) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.plainPassword) }}
+                        {{ form_widget(form.plainPassword, { attr: { class: 'form-control' } }) }}
+                        {{ form_errors(form.plainPassword) }}
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-between">
+                        <button type="submit" class="btn btn-eco px-4">Save</button>
+                        <a href="{{ path('app_home') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                    </div>
+
+                    {{ form_end(form) }}
+                    <!-- Delete Button -->
+                    <button class="btn btn-danger w-100 mt-4" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                        Delete My Account
+                    </button>
+
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content" style="border-radius: 15px;">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title">Confirm Account Deletion</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p>This action is permanent. All your data will be removed. Are you sure you want to continue?</p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                                    <form action="{{ path('app_profile_delete') }}" method="POST">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
+                                        <button type="submit" class="btn btn-danger">Yes, delete my account</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
