@@ -68,6 +68,38 @@
             margin-right: 8px;
         }
 
+        /* LOGIN BUTTON */
+        .login-btn {
+            background: var(--eco-light);
+            color: var(--eco-dark) !important;
+            font-weight: 600;
+            user-select: none;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            background: var(--eco-green);
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* REGISTER BUTTON */
+        .register-btn {
+            background: var(--eco-accent);
+            color: white !important;
+            font-weight: 600;
+            user-select: none;
+            transition: all 0.3s;
+        }
+
+        .register-btn:hover {
+            background: #ff9800;
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        }
+
         .modal-dialog-centered {
             min-height: calc(100% - 1rem);
             display: flex;
@@ -208,13 +240,21 @@
                     </li>
 
                 {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+                    <li class="nav-item ms-3">
+                        <a href="{{ path('app_login') }}"
+                           class="nav-link rounded-pill px-3 py-1 login-btn">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_register') }}">Register</a>
+
+                    <li class="nav-item ms-2">
+                        <a href="{{ path('app_register') }}"
+                           class="nav-link rounded-pill px-3 py-1 register-btn">
+                            <i class="bi bi-person-plus"></i> Register
+                        </a>
                     </li>
                 {% endif %}
+
             </ul>
         </div>
     </div>
