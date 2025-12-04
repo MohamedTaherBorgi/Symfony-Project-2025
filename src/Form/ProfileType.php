@@ -33,6 +33,16 @@ class ProfileType extends AbstractType
                 'constraints' => [new NotBlank()],
                 'attr' => ['class' => 'form-control'],
             ])
+            ->add('telephone', TextType::class, [
+                'label' => 'Phone Number',
+                'constraints' => [new NotBlank()],
+                'attr' => ['class' => 'form-control'],
+            ])
+            ->add('adresse', TextType::class, [
+                'label' => 'Address',
+                'constraints' => [new NotBlank()],
+                'attr' => ['class' => 'form-control'],
+            ])
             ->add('plainPassword', PasswordType::class, [
                 'label' => 'New Password (optional)',
                 'mapped' => false,
@@ -52,6 +62,7 @@ class ProfileType extends AbstractType
                 'attr' => ['class' => 'form-control'],
             ]);
     }
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
