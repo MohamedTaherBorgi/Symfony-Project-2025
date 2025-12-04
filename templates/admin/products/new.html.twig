@@ -1,12 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Add Product - Admin{% endblock %}
+{% block title %}
+    {% if form.vars.value.id %}
+        Edit Product
+    {% else %}
+        Add Product
+    {% endif %}
+{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4 text-center">➕ Add New Product</h1>
+
+    <h1 class="mb-4 text-center">
+        {% if form.vars.value.id %}
+            ✏️ Edit Product
+        {% else %}
+            ➕ Add New Product
+        {% endif %}
+    </h1>
 
     <div class="row justify-content-center">
-        <div class="col-md-7 col-lg-6">
+        <div class="col-md-8 col-lg-6">
 
             <div class="card shadow-sm" style="border-radius: 15px;">
                 <div class="card-body p-4">
@@ -25,18 +38,16 @@
                         {{ form_errors(form.description) }}
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            {{ form_label(form.prix) }}
-                            {{ form_widget(form.prix, { attr: { class: 'form-control' } }) }}
-                            {{ form_errors(form.prix) }}
-                        </div>
+                    <div class="mb-3">
+                        {{ form_label(form.prix) }}
+                        {{ form_widget(form.prix, { attr: { class: 'form-control' } }) }}
+                        {{ form_errors(form.prix) }}
+                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            {{ form_label(form.stock) }}
-                            {{ form_widget(form.stock, { attr: { class: 'form-control' } }) }}
-                            {{ form_errors(form.stock) }}
-                        </div>
+                    <div class="mb-3">
+                        {{ form_label(form.stock) }}
+                        {{ form_widget(form.stock, { attr: { class: 'form-control' } }) }}
+                        {{ form_errors(form.stock) }}
                     </div>
 
                     <div class="mb-3">
@@ -51,9 +62,26 @@
                         {{ form_errors(form.imageFile) }}
                     </div>
 
+                    {% if form.vars.value.image %}
+                        <div class="text-center mb-3">
+                            <img src="{{ asset('uploads/products/' ~ form.vars.value.image) }}"
+                                 class="img-fluid rounded"
+                                 style="max-height: 150px;">
+                        </div>
+                    {% endif %}
+
                     <div class="mt-4 d-flex justify-content-between">
-                        <button type="submit" class="btn btn-eco px-4">Create Product</button>
-                        <a href="{{ path('admin_products') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-eco px-4">
+                            {% if form.vars.value.id %}
+                                Update
+                            {% else %}
+                                Save
+                            {% endif %}
+                        </button>
+
+                        <a href="{{ path('product_index') }}" class="btn btn-outline-secondary px-4">
+                            Cancel
+                        </a>
                     </div>
 
                     {{ form_end(form) }}

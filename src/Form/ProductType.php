@@ -2,20 +2,17 @@
 
 namespace App\Form;
 
-use App\Entity\Category;
 use App\Entity\Product;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\Category;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\File;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Positive;
 
 class ProductType extends AbstractType
 {
@@ -24,30 +21,25 @@ class ProductType extends AbstractType
         $builder
             ->add('nom', TextType::class, [
                 'label' => 'Product Name',
-                'constraints' => [new NotBlank()],
-                'attr' => ['class' => 'form-control'],
+                'attr' => ['class' => 'form-control']
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
-                'constraints' => [new NotBlank()],
-                'attr' => ['class' => 'form-control', 'rows' => 4],
+                'attr' => ['class' => 'form-control']
             ])
-            ->add('prix', MoneyType::class, [
-                'label' => 'Price',
-                'currency' => 'TND',
-                'constraints' => [new NotBlank(), new Positive()],
-                'attr' => ['class' => 'form-control'],
+            ->add('prix', NumberType::class, [
+                'label' => 'Price (TND)',
+                'attr' => ['class' => 'form-control']
             ])
-            ->add('stock', IntegerType::class, [
+            ->add('stock', NumberType::class, [
                 'label' => 'Stock',
-                'constraints' => [new NotBlank(), new Positive()],
-                'attr' => ['class' => 'form-control'],
+                'attr' => ['class' => 'form-control']
             ])
             ->add('category', EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => 'nom',
-                'constraints' => [new NotBlank()],
-                'attr' => ['class' => 'form-control'],
+                'label' => 'Category',
+                'attr' => ['class' => 'form-control']
             ])
             ->add('imageFile', FileType::class, [
                 'label' => 'Product Image',
@@ -55,16 +47,11 @@ class ProductType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => [
-                            'image/jpeg',
-                            'image/png',
-                            'image/webp',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid image (JPEG, PNG, WebP)',
+                        'mimeTypes' => ['image/jpeg', 'image/png'],
+                        'mimeTypesMessage' => 'Upload only JPG/PNG images'
                     ])
                 ],
-                'attr' => ['class' => 'form-control'],
+                'attr' => ['class' => 'form-control']
             ]);
     }
 

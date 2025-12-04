@@ -16,6 +16,10 @@
         {% else %}
             <h1>📦 All Products</h1>
         {% endif %}
+
+        <a href="{{ path('product_new') }}" class="btn btn-success">
+            + Add New Product
+        </a>
     </div>
 
     <div class="card">
@@ -29,7 +33,7 @@
                         <th>Category</th>
                         <th>Price</th>
                         <th>Stock</th>
-                        <th>Show</th>
+                        <th></th>
                     </tr>
                     </thead>
 
@@ -47,11 +51,16 @@
                             </span>
                             </td>
 
-                            <td>
-                                <a href="{{ path('product_show', { id: product.id }) }}"
-                                   class="btn btn-sm btn-info">
-                                    View
-                                </a>
+                            <td class="text-end">
+                                <a href="{{ path('product_show', { id: product.id }) }}" class="btn btn-sm btn-info">View</a>
+                                <a href="{{ path('product_edit', { id: product.id }) }}" class="btn btn-sm btn-warning">Edit</a>
+
+                                <form action="{{ path('product_delete', { id: product.id }) }}" method="POST"
+                                      class="d-inline" onsubmit="return confirm('Delete?');">
+                                    <input type="hidden" name="_token"
+                                           value="{{ csrf_token('delete_product_' ~ product.id) }}">
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     {% else %}
