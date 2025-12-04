@@ -25,26 +25,29 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
+    /* =============================
+       DASHBOARD
+    ==============================*/
     #[Route('/', name: 'admin_dashboard')]
     public function dashboard(
         OrderRepository $orderRepository,
         ProductRepository $productRepository,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        CategoryRepository $categoryRepository
     ): Response {
-        $totalOrders = count($orderRepository->findAll());
-        $totalProducts = count($productRepository->findAll());
-        $totalUsers = count($userRepository->findAll());
-        $recentOrders = $orderRepository->findBy([], ['createdAt' => 'DESC'], 10);
-
         return $this->render('admin/dashboard.html.twig', [
-            'totalOrders' => $totalOrders,
-            'totalProducts' => $totalProducts,
-            'totalUsers' => $totalUsers,
-            'recentOrders' => $recentOrders,
+            'totalOrders'     => $orderRepository->count([]),
+            'totalProducts'   => $productRepository->count([]),
+            'totalUsers'      => $userRepository->count([]),
+            'totalCategories' => $categoryRepository->count([]),
+            'recentOrders'    => $orderRepository->findBy([], ['createdAt' => 'DESC'], 10),
         ]);
     }
 
-    // Products Management
+
+    /* =============================
+       PRODUCTS
+    ==============================*/
     #[Route('/products', name: 'admin_products')]
     public function products(ProductRepository $productRepository): Response
     {
@@ -54,28 +57,21 @@ class AdminController extends AbstractController
     }
 
     #[Route('/products/new', name: 'admin_product_new')]
-    public function newProduct(
-        Request $request,
-        EntityManagerInterface $em,
-        SluggerInterface $slugger
-    ): Response {
+    public function newProduct(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('imageFile')->getData();
-            
+
             if ($imageFile) {
-                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $filename = $slugger->slug(pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME));
+                $newFilename = $filename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
                 try {
-                    $imageFile->move(
-                        $this->getParameter('kernel.project_dir') . '/public/uploads/products',
-                        $newFilename
-                    );
+                    $imageFile->move($this->getParameter('kernel.project_dir') . '/public/uploads/products', $newFilename);
                     $product->setImage($newFilename);
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Could not upload image');
@@ -85,7 +81,6 @@ class AdminController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            $this->addFlash('success', 'Product created successfully!');
             return $this->redirectToRoute('admin_products');
         }
 
@@ -95,28 +90,20 @@ class AdminController extends AbstractController
     }
 
     #[Route('/products/{id}/edit', name: 'admin_product_edit')]
-    public function editProduct(
-        Product $product,
-        Request $request,
-        EntityManagerInterface $em,
-        SluggerInterface $slugger
-    ): Response {
+    public function editProduct(Product $product, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('imageFile')->getData();
-            
+
             if ($imageFile) {
-                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $filename = $slugger->slug(pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME));
+                $newFilename = $filename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
                 try {
-                    $imageFile->move(
-                        $this->getParameter('kernel.project_dir') . '/public/uploads/products',
-                        $newFilename
-                    );
+                    $imageFile->move($this->getParameter('kernel.project_dir') . '/public/uploads/products', $newFilename);
                     $product->setImage($newFilename);
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Could not upload image');
@@ -124,12 +111,11 @@ class AdminController extends AbstractController
             }
 
             $em->flush();
-            $this->addFlash('success', 'Product updated successfully!');
             return $this->redirectToRoute('admin_products');
         }
 
         return $this->render('admin/products/edit.html.twig', [
-            'form' => $form->createView(),
+            'form'    => $form->createView(),
             'product' => $product,
         ]);
     }
@@ -140,16 +126,18 @@ class AdminController extends AbstractController
         $em->remove($product);
         $em->flush();
 
-        $this->addFlash('success', 'Product deleted successfully!');
         return $this->redirectToRoute('admin_products');
     }
 
-    // Categories Management
+
+    /* =============================
+       CATEGORIES (FIXED)
+    ==============================*/
     #[Route('/categories', name: 'admin_categories')]
-    public function categories(CategoryRepository $categoryRepository): Response
+    public function categories(CategoryRepository $repo): Response
     {
         return $this->render('admin/categories/index.html.twig', [
-            'categories' => $categoryRepository->findAll(),
+            'categories' => $repo->findAll(),
         ]);
     }
 
@@ -163,8 +151,6 @@ class AdminController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($category);
             $em->flush();
-
-            $this->addFlash('success', 'Category created successfully!');
             return $this->redirectToRoute('admin_categories');
         }
 
@@ -173,7 +159,38 @@ class AdminController extends AbstractController
         ]);
     }
 
-    // Orders Management
+    #[Route('/categories/{id}/edit', name: 'admin_category_edit')]
+    public function editCategory(Category $category, Request $request, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            return $this->redirectToRoute('admin_categories');
+        }
+
+        return $this->render('admin/categories/edit.html.twig', [
+            'form'     => $form->createView(),
+            'category' => $category,
+        ]);
+    }
+
+    #[Route('/categories/{id}/delete', name: 'admin_category_delete', methods: ['POST'])]
+    public function deleteCategory(Category $category, EntityManagerInterface $em, Request $request): Response
+    {
+        if ($this->isCsrfTokenValid('delete_category_' . $category->getId(), $request->get('_token'))) {
+            $em->remove($category);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('admin_categories');
+    }
+
+
+    /* =============================
+       ORDERS
+    ==============================*/
     #[Route('/orders', name: 'admin_orders')]
     public function orders(OrderRepository $orderRepository): Response
     {
@@ -191,24 +208,22 @@ class AdminController extends AbstractController
     }
 
     #[Route('/orders/{id}/update-status', name: 'admin_order_update_status', methods: ['POST'])]
-    public function updateOrderStatus(
-        Order $order,
-        Request $request,
-        EntityManagerInterface $em
-    ): Response {
-        $newStatus = $request->request->get('status');
-        $order->setStatus($newStatus);
-        
-        if ($newStatus === 'delivered') {
+    public function updateOrderStatus(Order $order, Request $request, EntityManagerInterface $em): Response
+    {
+        $order->setStatus($request->request->get('status'));
+
+        if ($order->getStatus() === 'delivered') {
             $order->setDeliveredAt(new \DateTimeImmutable());
         }
 
         $em->flush();
-        $this->addFlash('success', 'Order status updated!');
         return $this->redirectToRoute('admin_order_show', ['id' => $order->getId()]);
     }
 
-    // Users Management
+
+    /* =============================
+       USERS
+    ==============================*/
     #[Route('/users', name: 'admin_users')]
     public function users(UserRepository $userRepository): Response
     {
