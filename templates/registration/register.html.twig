@@ -3,16 +3,16 @@
 {% block title %}Register - EcoStore{% endblock %}
 
 {% block body %}
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg border-0" style="border-radius: 20px;">
-                <div class="card-body p-5">
-                    <div class="text-center mb-4">
-                        <h2 class="fw-bold">🌿 Join EcoStore!</h2>
-                        <p class="text-muted">Create your account and start shopping eco-friendly</p>
-                    </div>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0" style="border-radius: 20px;">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold">🌿 Join EcoStore!</h2>
+                    <p class="text-muted">Create your account and start shopping eco-friendly</p>
+                </div>
 
-                    {{ form_start(registrationForm) }}
+                {{ form_start(registrationForm) }}
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             {{ form_label(registrationForm.prenom, 'First Name') }}
@@ -56,23 +56,16 @@
                         {{ form_errors(registrationForm.adresse) }}
                     </div>
 
-                    <div class="form-check mb-4">
-                        {{ form_widget(registrationForm.agreeTerms) }}
-                        {{ form_label(registrationForm.agreeTerms) }}
-                        {{ form_errors(registrationForm.agreeTerms) }}
-                    </div>
-
                     <button type="submit" class="btn btn-eco w-100 py-2 mb-3">Create Account</button>
+                {{ form_end(registrationForm) }}
 
-                    {{ form_end(registrationForm) }}
-
-                    <hr>
-                    <p class="text-center mb-0">
-                        Already have an account?
-                        <a href="{{ path('app_login') }}" class="text-success fw-bold">Login here</a>
-                    </p>
-                </div>
+                <hr>
+                <p class="text-center mb-0">
+                    Already have an account? 
+                    <a href="{{ path('app_login') }}" class="text-success fw-bold">Login here</a>
+                </p>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

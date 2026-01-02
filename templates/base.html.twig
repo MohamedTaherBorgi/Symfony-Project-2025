@@ -5,7 +5,6 @@
     <title>{% block title %}EcoStore - Eco-Friendly Products{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
         :root {
             --eco-green: #90C695;
@@ -13,119 +12,44 @@
             --eco-light: #E8F5E9;
             --eco-accent: #FFB74D;
         }
-
-        html, body {
-            height: 100%;
-        }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #fafafa;
-            display: flex;
-            flex-direction: column;
         }
-
-        main {
-            flex: 1;
-        }
-
         .navbar {
             background: linear-gradient(135deg, var(--eco-green) 0%, var(--eco-dark) 100%);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
             color: white !important;
         }
-
         .nav-link {
-            color: rgba(255, 255, 255, 0.9) !important;
+            color: rgba(255,255,255,0.9) !important;
             transition: all 0.3s;
         }
-
         .nav-link:hover {
             color: white !important;
             transform: translateY(-2px);
         }
-
-        label.form-label,
-        .form-label,
-        form label,
-        .card-body label,
-        .form-group label,
-        .col-form-label {
-            font-weight: 700 !important;
-        }
-
-        .nav-profile-img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid white;
-            margin-right: 8px;
-        }
-
-        /* LOGIN BUTTON */
-        .login-btn {
-            background: var(--eco-light);
-            color: var(--eco-dark) !important;
-            font-weight: 600;
-            user-select: none;
-            transition: all 0.3s;
-        }
-
-        .login-btn:hover {
-            background: var(--eco-green);
-            color: white !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        /* REGISTER BUTTON */
-        .register-btn {
-            background: var(--eco-accent);
-            color: white !important;
-            font-weight: 600;
-            user-select: none;
-            transition: all 0.3s;
-        }
-
-        .register-btn:hover {
-            background: #ff9800;
-            color: white !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-        }
-
-        .modal-dialog-centered {
-            min-height: calc(100% - 1rem);
-            display: flex;
-            align-items: center;
-        }
-
         .hero {
             background: linear-gradient(135deg, var(--eco-light) 0%, #fff 100%);
             padding: 60px 0;
             border-radius: 20px;
             margin: 20px 0;
         }
-
         .product-card {
             border: none;
             border-radius: 15px;
             overflow: hidden;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
-
         .product-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-
         .product-img {
             height: 200px;
             background: linear-gradient(135deg, var(--eco-light) 0%, #C8E6C9 100%);
@@ -134,7 +58,6 @@
             justify-content: center;
             font-size: 4rem;
         }
-
         .btn-eco {
             background: var(--eco-green);
             color: white;
@@ -143,14 +66,12 @@
             padding: 10px 30px;
             transition: all 0.3s;
         }
-
         .btn-eco:hover {
             background: var(--eco-dark);
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
-
         .eco-badge {
             background: var(--eco-accent);
             color: white;
@@ -160,7 +81,6 @@
             font-weight: 600;
             display: inline-block;
         }
-
         .cart-badge {
             background: #ff4444;
             color: white;
@@ -171,7 +91,6 @@
             top: -5px;
             right: -5px;
         }
-
         footer {
             background: var(--eco-dark);
             color: white;
@@ -182,139 +101,90 @@
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
-<nav class="navbar navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand" href="{{ path('app_home') }}">🌱 EcoStore</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_home') }}">
-                        <i class="bi bi-house-door"></i> Home
-                    </a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-box-seam"></i> Products
-                    </a>
-
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="{{ path('product_index') }}">
-                                <i class="bi bi-grid"></i> All Products
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{{ path('app_home') }}">🌱 EcoStore</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('product_index') }}">Products</a>
+                    </li>
+                    
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="{{ path('cart_index') }}">
+                                🛒 Cart
                             </a>
                         </li>
-
-                        <li><hr class="dropdown-divider"></li>
-
-                        <li class="dropdown-header">Categories</li>
-
-                        {% for cat in categories %}
-                            <li>
-                                <a class="dropdown-item"
-                                   href="{{ path('product_by_category', { id: cat.id }) }}">
-                                    {{ cat.nom }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-
-                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <li class="nav-item">
-                        <a class="nav-link position-relative" href="{{ path('cart_index') }}">
-                            <i class="bi bi-cart"></i> Cart
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('order_my_orders') }}">
-                            <i class="bi bi-receipt"></i> My Orders
-                        </a>
-                    </li>
-                    {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('order_my_orders') }}">My Orders</a>
+                        </li>
+                        {% if is_granted('ROLE_ADMIN') %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('admin_dashboard') }}">⚙️ Admin</a>
                         </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" 
+                               data-bs-toggle="dropdown">
+                                👤 {{ app.user.prenom }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_register') }}">Register</a>
+                        </li>
                     {% endif %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                           data-bs-toggle="dropdown">
-
-                            <img src="/uploads/users/{{ app.user.image }}" class="nav-profile-img">
-
-                            {{ app.user.prenom }}
-                        </a>
-
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" href="{{ path('app_profile_edit') }}">
-                                    <i class="bi bi-person-circle"></i> Edit Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ path('app_logout') }}">
-                                    <i class="bi bi-box-arrow-right"></i> Logout
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                {% else %}
-                    <li class="nav-item ms-3">
-                        <a href="{{ path('app_login') }}"
-                           class="nav-link rounded-pill px-3 py-1 login-btn">
-                            <i class="bi bi-box-arrow-in-right"></i> Login
-                        </a>
-                    </li>
-
-                    <li class="nav-item ms-2">
-                        <a href="{{ path('app_register') }}"
-                           class="nav-link rounded-pill px-3 py-1 register-btn">
-                            <i class="bi bi-person-plus"></i> Register
-                        </a>
-                    </li>
-                {% endif %}
-
-            </ul>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<main class="container my-4">
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <main class="container my-4">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('warning') %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer class="text-center">
+        <div class="container">
+            <p class="mb-0">🌍 EcoStore - Making the world greener, one product at a time</p>
+            <small>Built with Symfony & Love for Nature 💚</small>
         </div>
-    {% endfor %}
+    </footer>
 
-    {% for message in app.flashes('error') %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    {% endfor %}
-
-    {% for message in app.flashes('warning') %}
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    {% endfor %}
-
-    {% block body %}{% endblock %}
-</main>
-
-<footer class="text-center">
-    <div class="container">
-        <p class="mb-0">🌍 EcoStore - Making the world greener, one product at a time</p>
-        <small>Built with Symfony & Love for Nature 💚</small>
-    </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-{% block javascripts %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block javascripts %}{% endblock %}
 </body>
 </html>

@@ -11,6 +11,10 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
+
 class ProfileController extends AbstractController
 {
     #[Route('/profile/edit', name: 'app_profile_edit')]
@@ -58,8 +62,13 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/profile/delete', name: 'app_profile_delete', methods: ['POST'])]
-    public function delete(Request $request, EntityManagerInterface $em): Response
-    {
+    public function delete(
+        Request $request,
+        EntityManagerInterface $em,
+        TokenStorageInterface $tokenStorage,
+        SessionInterface $session
+    ): Response {
+
         $user = $this->getUser();
         if (!$user) {
             throw new AccessDeniedHttpException();
@@ -69,11 +78,17 @@ class ProfileController extends AbstractController
             throw $this->createAccessDeniedException('Invalid CSRF token');
         }
 
+        // 1. Log the user OUT before deleting the entity
+        $tokenStorage->setToken(null);
+        $session->invalidate();
+
+        // 2. Remove the user from database
         $em->remove($user);
         $em->flush();
 
         $this->addFlash('danger', 'Your account has been deleted');
 
-        return $this->redirectToRoute('app_logout');
+        // 3. Redirect anywhere (user is now fully logged out)
+        return $this->redirectToRoute('app_home');
     }
 }

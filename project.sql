@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Hôte : 127.0.0.1
--- Généré le : mer. 03 déc. 2025 à 19:55
--- Version du serveur : 10.4.32-MariaDB
--- Version de PHP : 8.2.12
+-- Host: 127.0.0.1
+-- Generation Time: Jan 02, 2026 at 06:11 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `project`
+-- Database: `project`
 --
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `cart`
+-- Table structure for table `cart`
 --
 
 CREATE TABLE `cart` (
@@ -34,18 +34,10 @@ CREATE TABLE `cart` (
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Déchargement des données de la table `cart`
---
-
-INSERT INTO `cart` (`id`, `created_at`, `updated_at`, `user_id`) VALUES
-(1, '2025-12-03 18:58:06', '2025-12-03 18:58:06', 1),
-(2, '2025-12-03 19:08:20', '2025-12-03 19:43:09', 2);
-
 -- --------------------------------------------------------
 
 --
--- Structure de la table `cart_item`
+-- Table structure for table `cart_item`
 --
 
 CREATE TABLE `cart_item` (
@@ -55,17 +47,10 @@ CREATE TABLE `cart_item` (
   `product_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Déchargement des données de la table `cart_item`
---
-
-INSERT INTO `cart_item` (`id`, `quantity`, `cart_id`, `product_id`) VALUES
-(1, 1, 1, 1);
-
 -- --------------------------------------------------------
 
 --
--- Structure de la table `category`
+-- Table structure for table `category`
 --
 
 CREATE TABLE `category` (
@@ -75,18 +60,18 @@ CREATE TABLE `category` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `category`
+-- Dumping data for table `category`
 --
 
 INSERT INTO `category` (`id`, `nom`, `description`) VALUES
-(1, 'Eco Bags', 'Sustainable and reusable bags'),
+(1, 'Eco Bags55', 'Sustainable and reusable bags'),
 (2, 'Green Accessories', 'Eco-friendly accessories'),
 (3, 'Natural Products', 'Products from natural materials');
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `doctrine_migration_versions`
+-- Table structure for table `doctrine_migration_versions`
 --
 
 CREATE TABLE `doctrine_migration_versions` (
@@ -96,16 +81,18 @@ CREATE TABLE `doctrine_migration_versions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `doctrine_migration_versions`
+-- Dumping data for table `doctrine_migration_versions`
 --
 
 INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_time`) VALUES
-('DoctrineMigrations\\Version20251203171639', '2025-12-03 18:16:57', 892);
+('DoctrineMigrations\\Version20251203171639', '2025-12-03 18:16:57', 892),
+('DoctrineMigrations\\Version20251203204239', '2025-12-03 21:42:43', 8),
+('DoctrineMigrations\\Version20260102125913', '2026-01-02 13:59:22', 9);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `messenger_messages`
+-- Table structure for table `messenger_messages`
 --
 
 CREATE TABLE `messenger_messages` (
@@ -121,7 +108,7 @@ CREATE TABLE `messenger_messages` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `order`
+-- Table structure for table `order`
 --
 
 CREATE TABLE `order` (
@@ -139,18 +126,18 @@ CREATE TABLE `order` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `order`
+-- Dumping data for table `order`
 --
 
 INSERT INTO `order` (`id`, `order_number`, `total_amount`, `status`, `shipping_address`, `phone`, `payment_method`, `payment_status`, `created_at`, `delivered_at`, `user_id`) VALUES
-(1, 'ORD-69307CE8365DF', 33.50, 'pending', 'ariana', '+21692602555', 'cash_on_delivery', 'pending', '2025-12-03 19:09:44', NULL, 2),
-(2, 'ORD-69307D79DFE00', 50.00, 'pending', 'ariana', '+21692602555', 'cash_on_delivery', 'pending', '2025-12-03 19:12:09', NULL, 2),
-(3, 'ORD-693084D18D375', 50.00, 'delivered', 'ariana', '+21692602555', 'cash_on_delivery', 'pending', '2025-12-03 19:43:29', '2025-12-03 19:46:41', 2);
+(5, 'ORD-6957F641B2647', 60.50, 'pending', 'tunisia, Monastir 5020', '25491851', 'cash', 'pending', '2026-01-02 17:45:53', NULL, 16),
+(6, 'ORD-6957F6ABC1D1B', 130.50, 'shipped', 'tunisia, Monastir 5020', '25491851', 'card', 'pending', '2026-01-02 17:47:39', '2026-01-02 17:49:14', 16),
+(7, 'ORD-6957F8B003D0C', 50.00, 'cancelled', 'tunisia, Monastir 5020', '25491851', 'cash', 'pending', '2026-01-02 17:56:16', '2026-01-02 18:07:49', 16);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `order_item`
+-- Table structure for table `order_item`
 --
 
 CREATE TABLE `order_item` (
@@ -163,19 +150,20 @@ CREATE TABLE `order_item` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `order_item`
+-- Dumping data for table `order_item`
 --
 
 INSERT INTO `order_item` (`id`, `quantity`, `unit_price`, `subtotal`, `order_ref_id`, `product_id`) VALUES
-(1, 1, 25.00, 25.00, 1, 1),
-(2, 1, 8.50, 8.50, 1, 2),
-(3, 2, 25.00, 50.00, 2, 1),
-(4, 2, 25.00, 50.00, 3, 1);
+(6, 3, 8.50, 25.50, 5, 2),
+(7, 1, 35.00, 35.00, 5, 3),
+(8, 3, 8.50, 25.50, 6, 2),
+(9, 3, 35.00, 105.00, 6, 3),
+(10, 2, 25.00, 50.00, 7, 1);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `product`
+-- Table structure for table `product`
 --
 
 CREATE TABLE `product` (
@@ -189,18 +177,21 @@ CREATE TABLE `product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `product`
+-- Dumping data for table `product`
 --
 
 INSERT INTO `product` (`id`, `nom`, `description`, `prix`, `stock`, `image`, `category_id`) VALUES
-(1, 'Bamboo Tote Bag', 'Handmade bamboo fiber tote bag', 25.00, 45, NULL, 1),
-(2, 'Recycled Notebook', 'Notebook made from recycled paper', 8.50, 99, NULL, 2),
-(3, 'Organic Cotton T-Shirt', 'Soft organic cotton eco t-shirt', 35.00, 30, NULL, 3);
+(1, 'Bamboo Tote Bag', 'Handmade bamboo fiber tote bag', 25.00, 35, NULL, 1),
+(2, 'Recycled Notebook', 'Notebook made from recycled paper', 8.50, 93, NULL, 2),
+(3, 'Organic Cotton T-Shirt', 'Soft organic cotton eco t-shirt', 35.00, 26, NULL, 3),
+(4, 'Sample Product for Eco Bags', 'This is an auto-generated product for the category: Eco Bags', 49.99, 20, NULL, 1),
+(5, 'Sample Product for Green Accessories', 'This is an auto-generated product for the category: Green Accessories', 49.99, 20, NULL, 2),
+(6, 'Sample Product for Natural Products', 'This is an auto-generated product for the category: Natural Products', 49.99, 20, NULL, 3);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `user`
+-- Table structure for table `user`
 --
 
 CREATE TABLE `user` (
@@ -211,30 +202,33 @@ CREATE TABLE `user` (
   `nom` varchar(255) NOT NULL,
   `prenom` varchar(255) NOT NULL,
   `telephone` varchar(20) NOT NULL,
-  `adresse` longtext NOT NULL
+  `image` varchar(255) DEFAULT NULL,
+  `street` varchar(100) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `postal_code` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `user`
+-- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`id`, `email`, `roles`, `password`, `nom`, `prenom`, `telephone`, `adresse`) VALUES
-(1, 'admin@ecostore.com', '[\"ROLE_ADMIN\"]', '$2y$13$jUwcpsAeYfjK8XgCEm1WOuTM3KBjXtAMVEONVnOgIktN1W724yNje', 'Admin', 'EcoStore', '+216 12 345 678', 'Admin Address'),
-(2, 'ines@gmail.com', '[]', '$2y$13$h6XEpYHHZNdOoymyHKt5rubpNeL7SZe7D3N8r/kZBFVRijAJ/nXLi', 'ines', 'ines', '+21692602555', 'ariana');
+INSERT INTO `user` (`id`, `email`, `roles`, `password`, `nom`, `prenom`, `telephone`, `image`, `street`, `city`, `postal_code`) VALUES
+(15, 't@t.t', '[\"ROLE_ADMIN\"]', '$2y$13$hJvUmn.6MkH5UnDxp3RSi.biMyjJvD4L0B8zI6IBoQpchj8D1RL0m', 'borgi', 'taher', '25491851', 'default.png', 'tunisia', 'tunis', '5050'),
+(16, 'a@a.a', '[\"ROLE_ADMIN\"]', '$2y$13$p42oIWUq5CihzetbNYkrZeDoEvvQBMYUrzCiI2R23D.4oKxZjDVgi', 'borgi', 'taher', '25491851', 'default.png', 'tunisia', 'Monastir', '5020');
 
 --
--- Index pour les tables déchargées
+-- Indexes for dumped tables
 --
 
 --
--- Index pour la table `cart`
+-- Indexes for table `cart`
 --
 ALTER TABLE `cart`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `UNIQ_BA388B7A76ED395` (`user_id`);
 
 --
--- Index pour la table `cart_item`
+-- Indexes for table `cart_item`
 --
 ALTER TABLE `cart_item`
   ADD PRIMARY KEY (`id`),
@@ -242,19 +236,19 @@ ALTER TABLE `cart_item`
   ADD KEY `IDX_F0FE25274584665A` (`product_id`);
 
 --
--- Index pour la table `category`
+-- Indexes for table `category`
 --
 ALTER TABLE `category`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `doctrine_migration_versions`
+-- Indexes for table `doctrine_migration_versions`
 --
 ALTER TABLE `doctrine_migration_versions`
   ADD PRIMARY KEY (`version`);
 
 --
--- Index pour la table `messenger_messages`
+-- Indexes for table `messenger_messages`
 --
 ALTER TABLE `messenger_messages`
   ADD PRIMARY KEY (`id`),
@@ -263,7 +257,7 @@ ALTER TABLE `messenger_messages`
   ADD KEY `IDX_75EA56E016BA31DB` (`delivered_at`);
 
 --
--- Index pour la table `order`
+-- Indexes for table `order`
 --
 ALTER TABLE `order`
   ADD PRIMARY KEY (`id`),
@@ -271,7 +265,7 @@ ALTER TABLE `order`
   ADD KEY `IDX_F5299398A76ED395` (`user_id`);
 
 --
--- Index pour la table `order_item`
+-- Indexes for table `order_item`
 --
 ALTER TABLE `order_item`
   ADD PRIMARY KEY (`id`),
@@ -279,103 +273,103 @@ ALTER TABLE `order_item`
   ADD KEY `IDX_52EA1F094584665A` (`product_id`);
 
 --
--- Index pour la table `product`
+-- Indexes for table `product`
 --
 ALTER TABLE `product`
   ADD PRIMARY KEY (`id`),
   ADD KEY `IDX_D34A04AD12469DE2` (`category_id`);
 
 --
--- Index pour la table `user`
+-- Indexes for table `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `UNIQ_8D93D649E7927C74` (`email`);
 
 --
--- AUTO_INCREMENT pour les tables déchargées
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT pour la table `cart`
+-- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT pour la table `cart_item`
---
-ALTER TABLE `cart_item`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT pour la table `category`
+-- AUTO_INCREMENT for table `cart_item`
+--
+ALTER TABLE `cart_item`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT pour la table `messenger_messages`
+-- AUTO_INCREMENT for table `messenger_messages`
 --
 ALTER TABLE `messenger_messages`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT pour la table `order`
+-- AUTO_INCREMENT for table `order`
 --
 ALTER TABLE `order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT pour la table `order_item`
+-- AUTO_INCREMENT for table `order_item`
 --
 ALTER TABLE `order_item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT pour la table `product`
+-- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT pour la table `user`
+-- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- Contraintes pour les tables déchargées
+-- Constraints for dumped tables
 --
 
 --
--- Contraintes pour la table `cart`
+-- Constraints for table `cart`
 --
 ALTER TABLE `cart`
   ADD CONSTRAINT `FK_BA388B7A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 --
--- Contraintes pour la table `cart_item`
+-- Constraints for table `cart_item`
 --
 ALTER TABLE `cart_item`
   ADD CONSTRAINT `FK_F0FE25271AD5CDBF` FOREIGN KEY (`cart_id`) REFERENCES `cart` (`id`),
   ADD CONSTRAINT `FK_F0FE25274584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`);
 
 --
--- Contraintes pour la table `order`
+-- Constraints for table `order`
 --
 ALTER TABLE `order`
   ADD CONSTRAINT `FK_F5299398A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 --
--- Contraintes pour la table `order_item`
+-- Constraints for table `order_item`
 --
 ALTER TABLE `order_item`
   ADD CONSTRAINT `FK_52EA1F094584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),
   ADD CONSTRAINT `FK_52EA1F09E238517C` FOREIGN KEY (`order_ref_id`) REFERENCES `order` (`id`);
 
 --
--- Contraintes pour la table `product`
+-- Constraints for table `product`
 --
 ALTER TABLE `product`
   ADD CONSTRAINT `FK_D34A04AD12469DE2` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`);
