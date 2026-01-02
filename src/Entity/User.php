@@ -1,9 +1,5 @@
 <?php
 
-// ============================================
-// FILE 1: src/Entity/User.php
-// ============================================
-
 namespace App\Entity;
 
 use App\Repository\UserRepository;
@@ -23,8 +19,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column]
-    private array $roles = [];
+    #[ORM\Column(type: 'json')]
+    private array $roles = ['ROLE_CLIENT']; // default role is client
 
     #[ORM\Column]
     private ?string $password = null;
@@ -38,11 +34,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20)]
     private ?string $telephone = null;
 
-    #[ORM\Column(type: 'text')]
-    private ?string $adresse = null;
+    // We'll use three separate fields for the address
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $street = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $city = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $postalCode = null;
 
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Cart $cart = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = 'default.png';
+
+    // ---------------- Getters & Setters ----------------
 
     public function getId(): ?int
     {
@@ -62,9 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
-        return array_unique($roles);
+        return $this->roles; // now only actual DB roles are returned
     }
 
     public function setRoles(array $roles): self
@@ -91,6 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
+        // not needed for now
     }
 
     public function getNom(): ?string
@@ -126,17 +133,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getAdresse(): ?string
+    // ---------- Address fields ----------
+    public function getStreet(): ?string
     {
-        return $this->adresse;
+        return $this->street;
     }
 
-    public function setAdresse(string $adresse): self
+    public function setStreet(?string $street): self
     {
-        $this->adresse = $adresse;
+        $this->street = $street;
         return $this;
     }
 
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): self
+    {
+        $this->city = $city;
+        return $this;
+    }
+
+    public function getPostalCode(): ?string
+    {
+        return $this->postalCode;
+    }
+
+    public function setPostalCode(?string $postalCode): self
+    {
+        $this->postalCode = $postalCode;
+        return $this;
+    }
+
+    // ---------- Cart ----------
     public function getCart(): ?Cart
     {
         return $this->cart;
@@ -153,6 +184,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->cart = $cart;
+        return $this;
+    }
+
+    // ---------- Image ----------
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
         return $this;
     }
 }

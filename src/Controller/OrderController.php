@@ -4,114 +4,149 @@ namespace App\Controller;
 
 use App\Entity\Order;
 use App\Entity\OrderItem;
-use App\Repository\CartRepository;
-use App\Repository\OrderRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/order')]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_CLIENT')]
 class OrderController extends AbstractController
 {
+    private const CART_COOKIE = 'eco_cart';
+
+    private function getCartFromCookie(Request $request): array
+    {
+        $cart = $request->cookies->get(self::CART_COOKIE);
+        return $cart ? json_decode($cart, true) : [];
+    }
+
+    private function clearCartCookie(Response $response): void
+    {
+        $cookie = Cookie::create(self::CART_COOKIE)
+            ->withValue('')
+            ->withExpires(time() - 3600)
+            ->withPath('/')
+            ->withHttpOnly(true);
+
+        $response->headers->setCookie($cookie);
+    }
+
     #[Route('/checkout', name: 'order_checkout')]
     public function checkout(
-        Request $request,
-        CartRepository $cartRepository,
+        Request                $request,
+        ProductRepository      $productRepository,
         EntityManagerInterface $em
-    ): Response {
-        $user = $this->getUser();
-        $cart = $cartRepository->findOneBy(['user' => $user]);
+    ): Response
+    {
+        $cartData = $this->getCartFromCookie($request);
 
-        if (!$cart || $cart->getCartItems()->isEmpty()) {
+        if (empty($cartData)) {
             $this->addFlash('warning', 'Your cart is empty!');
             return $this->redirectToRoute('cart_index');
         }
 
+        $user = $this->getUser();
+
         if ($request->isMethod('POST')) {
-            // Create new order
+
             $order = new Order();
             $order->setUser($user);
-            $order->setShippingAddress($request->request->get('address') ?? $user->getAdresse());
+
+            $street = $request->request->get('street') ?? $user->getStreet();
+            $city = $request->request->get('city') ?? $user->getCity();
+            $postalCode = $request->request->get('postalCode') ?? $user->getPostalCode();
+            $shippingAddress = $street . ', ' . $city . ' ' . $postalCode;
+
+            $order->setShippingAddress($shippingAddress);
             $order->setPhone($request->request->get('phone') ?? $user->getTelephone());
-            $order->setPaymentMethod($request->request->get('payment_method'));
-            
+            $order->setPaymentMethod($request->request->get('payment_method') ?? 'cash');
+            $order->setStatus('pending');
+            $order->setCreatedAt(new \DateTimeImmutable());
+
             $total = 0;
 
-            // Convert cart items to order items
-            foreach ($cart->getCartItems() as $cartItem) {
+            foreach ($cartData as $productId => $quantity) {
+                $product = $productRepository->find($productId);
+                if (!$product) continue;
+
+                $subtotal = $product->getPrix() * $quantity;
+
                 $orderItem = new OrderItem();
-                $orderItem->setProduct($cartItem->getProduct());
-                $orderItem->setQuantity($cartItem->getQuantity());
-                $orderItem->setUnitPrice($cartItem->getProduct()->getPrix());
-                $subtotal = (float)$cartItem->getProduct()->getPrix() * $cartItem->getQuantity();
-                $orderItem->setSubtotal((string)$subtotal);
-                
-                $order->addOrderItem($orderItem);
+                $orderItem->setProduct($product);
+                $orderItem->setQuantity($quantity);
+                $orderItem->setUnitPrice($product->getPrix());
+                $orderItem->setSubtotal($subtotal);
+                $orderItem->setOrderRef($order);
+
+                $em->persist($orderItem);
+
                 $total += $subtotal;
 
-                // Update product stock
-                $product = $cartItem->getProduct();
-                $newStock = $product->getStock() - $cartItem->getQuantity();
-                if ($newStock < 0) {
-                    $this->addFlash('error', 'Not enough stock for ' . $product->getNom());
-                    return $this->redirectToRoute('cart_index');
-                }
-                $product->setStock($newStock);
+                // Decrease stock
+                $product->setStock($product->getStock() - $quantity);
+                $em->persist($product);
             }
 
-            $order->setTotalAmount((string)$total);
-            
-            // Set payment status based on method
-            if ($request->request->get('payment_method') === 'card') {
-                $order->setPaymentStatus('paid');
-                $order->setStatus('processing');
-            } else {
-                $order->setPaymentStatus('pending');
-                $order->setStatus('pending');
-            }
-
+            $order->setTotalAmount($total);
             $em->persist($order);
-
-            // Clear cart after order
-            foreach ($cart->getCartItems() as $item) {
-                $em->remove($item);
-            }
-
             $em->flush();
 
+            $response = $this->redirectToRoute('order_show', ['id' => $order->getId()]);
+            $this->clearCartCookie($response);
+
             $this->addFlash('success', 'Order placed successfully! Order #' . $order->getOrderNumber());
-            return $this->redirectToRoute('order_show', ['id' => $order->getId()]);
+            return $response;
+        }
+
+        // Show checkout page
+        $cartItems = [];
+        $total = 0;
+        foreach ($cartData as $productId => $quantity) {
+            $product = $productRepository->find($productId);
+            if (!$product) continue;
+
+            $subtotal = $product->getPrix() * $quantity;
+            $cartItems[] = [
+                'product' => $product,
+                'quantity' => $quantity,
+                'subtotal' => $subtotal,
+            ];
+            $total += $subtotal;
         }
 
         return $this->render('order/checkout.html.twig', [
-            'cart' => $cart,
+            'cart' => [
+                'cartItems' => $cartItems,
+                'total' => $total,
+                'totalItems' => array_sum(array_values($cartData)),
+            ],
+            'user' => $user,
         ]);
     }
 
     #[Route('/my-orders', name: 'order_my_orders')]
-    public function myOrders(OrderRepository $orderRepository): Response
+    public function myOrders(EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
-        $orders = $orderRepository->findBy(
-            ['user' => $user],
-            ['createdAt' => 'DESC']
-        );
+        $orders = $em->getRepository(Order::class)->findBy(['user' => $user], ['createdAt' => 'DESC']);
 
         return $this->render('order/my_orders.html.twig', [
-            'orders' => $orders,
+            'orders' => $orders
         ]);
     }
 
-    #[Route('/{id}', name: 'order_show', requirements: ['id' => '\d+'])]
+    #[Route('/{id}', name: 'order_show')]
     public function show(Order $order): Response
     {
-        // Check if user owns this order
+        // Ensure the current user owns the order
+        $this->denyAccessUnlessGranted('ROLE_CLIENT');
         if ($order->getUser() !== $this->getUser()) {
-            throw $this->createAccessDeniedException('You cannot access this order.');
+            throw $this->createAccessDeniedException('You cannot view this order.');
         }
 
         return $this->render('order/show.html.twig', [

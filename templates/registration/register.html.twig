@@ -3,69 +3,149 @@
 {% block title %}Register - EcoStore{% endblock %}
 
 {% block body %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-lg border-0" style="border-radius: 20px;">
-            <div class="card-body p-5">
-                <div class="text-center mb-4">
-                    <h2 class="fw-bold">🌿 Join EcoStore!</h2>
-                    <p class="text-muted">Create your account and start shopping eco-friendly</p>
-                </div>
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0" style="border-radius: 20px;">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold">🌿 Join EcoStore!</h2>
+                        <p class="text-muted">Create your account and start shopping eco-friendly</p>
+                    </div>
 
-                {{ form_start(registrationForm) }}
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            {{ form_label(registrationForm.prenom, 'First Name') }}
-                            {{ form_widget(registrationForm.prenom) }}
-                            {{ form_errors(registrationForm.prenom) }}
+                    {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
+
+                    {# -- First & Last Name -- #}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form_label(registrationForm.prenom) }}
+                            {{ form_widget(registrationForm.prenom, {'attr': {'class': 'form-control' ~ (registrationForm.prenom.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {% for error in registrationForm.prenom.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
                         </div>
-                        <div class="col-md-6 mb-3">
-                            {{ form_label(registrationForm.nom, 'Last Name') }}
-                            {{ form_widget(registrationForm.nom) }}
-                            {{ form_errors(registrationForm.nom) }}
+                        <div class="col-md-6">
+                            {{ form_label(registrationForm.nom) }}
+                            {{ form_widget(registrationForm.nom, {'attr': {'class': 'form-control' ~ (registrationForm.nom.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {% for error in registrationForm.nom.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
                         </div>
                     </div>
 
+                    {# -- Email -- #}
                     <div class="mb-3">
                         {{ form_label(registrationForm.email) }}
-                        {{ form_widget(registrationForm.email) }}
-                        {{ form_errors(registrationForm.email) }}
+                        {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control' ~ (registrationForm.email.vars.errors|length ? ' is-invalid' : '')}}) }}
+                        {% for error in registrationForm.email.vars.errors %}
+                            <div class="invalid-feedback">{{ error.message }}</div>
+                        {% endfor %}
                     </div>
 
+                    {# -- Password -- #}
                     <div class="mb-3">
                         {{ form_label(registrationForm.plainPassword.first) }}
-                        {{ form_widget(registrationForm.plainPassword.first) }}
-                        {{ form_errors(registrationForm.plainPassword.first) }}
+                        {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control' ~ (registrationForm.plainPassword.first.vars.errors|length ? ' is-invalid' : '')}}) }}
+                        {% for error in registrationForm.plainPassword.first.vars.errors %}
+                            <div class="invalid-feedback">{{ error.message }}</div>
+                        {% endfor %}
                     </div>
 
                     <div class="mb-3">
                         {{ form_label(registrationForm.plainPassword.second) }}
-                        {{ form_widget(registrationForm.plainPassword.second) }}
-                        {{ form_errors(registrationForm.plainPassword.second) }}
+                        {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control' ~ (registrationForm.plainPassword.second.vars.errors|length ? ' is-invalid' : '')}}) }}
+                        {% for error in registrationForm.plainPassword.second.vars.errors %}
+                            <div class="invalid-feedback">{{ error.message }}</div>
+                        {% endfor %}
                     </div>
 
+                    {# -- Phone -- #}
                     <div class="mb-3">
-                        {{ form_label(registrationForm.telephone, 'Phone') }}
-                        {{ form_widget(registrationForm.telephone) }}
-                        {{ form_errors(registrationForm.telephone) }}
+                        {{ form_label(registrationForm.telephone) }}
+                        <div class="input-group">
+                            <span class="input-group-text">+216</span>
+                            {{ form_widget(registrationForm.telephone, {'attr': {'class': 'form-control' ~ (registrationForm.telephone.vars.errors|length ? ' is-invalid' : ''), 'placeholder':'12345678'}}) }}
+                        </div>
+                        {% for error in registrationForm.telephone.vars.errors %}
+                            <div class="invalid-feedback d-block">{{ error.message }}</div>
+                        {% endfor %}
                     </div>
 
+                    {# -- Address -- #}
+                    {# -- Address -- #}
                     <div class="mb-3">
-                        {{ form_label(registrationForm.adresse, 'Address') }}
-                        {{ form_widget(registrationForm.adresse) }}
-                        {{ form_errors(registrationForm.adresse) }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(registrationForm.street) }}
+                                {{ form_widget(registrationForm.street, {'attr': {'class':'form-control' ~ (registrationForm.street.vars.errors|length ? ' is-invalid' : '')}}) }}
+                                {% for error in registrationForm.street.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(registrationForm.city) }}
+                                {{ form_widget(registrationForm.city, {'attr': {'class':'form-control' ~ (registrationForm.city.vars.errors|length ? ' is-invalid' : '')}}) }}
+                                {% for error in registrationForm.city.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-12">
+                                {{ form_label(registrationForm.postalCode) }}
+                                {{ form_widget(registrationForm.postalCode, {'attr': {'class':'form-control' ~ (registrationForm.postalCode.vars.errors|length ? ' is-invalid' : '')}}) }}
+                                {% for error in registrationForm.postalCode.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {# -- Terms -- #}
+                    <div class="form-check mb-4">
+                        {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input' ~ (registrationForm.agreeTerms.vars.errors|length ? ' is-invalid' : '')}}) }}
+                        {{ form_label(registrationForm.agreeTerms) }}
+                        {% for error in registrationForm.agreeTerms.vars.errors %}
+                            <div class="invalid-feedback d-block">{{ error.message }}</div>
+                        {% endfor %}
                     </div>
 
                     <button type="submit" class="btn btn-eco w-100 py-2 mb-3">Create Account</button>
-                {{ form_end(registrationForm) }}
+                    {{ form_end(registrationForm) }}
 
-                <hr>
-                <p class="text-center mb-0">
-                    Already have an account? 
-                    <a href="{{ path('app_login') }}" class="text-success fw-bold">Login here</a>
-                </p>
+                    <hr>
+                    <p class="text-center mb-0">
+                        Already have an account?
+                        <a href="{{ path('app_login') }}" class="text-success fw-bold">Login here</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    {# -- Email Exists Modal -- #}
+    {% if emailExists %}
+        <div class="modal fade" id="emailExistsModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius:15px;">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">Email Already Exists</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>The email you entered is already registered. Please login or use another email.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ path('app_login') }}" class="btn btn-success">Login</a>
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                var modal = new bootstrap.Modal(document.getElementById('emailExistsModal'));
+                modal.show();
+            });
+        </script>
+    {% endif %}
+
 {% endblock %}

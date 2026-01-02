@@ -3,44 +3,58 @@
 {% block title %}Admin Dashboard - EcoStore{% endblock %}
 
 {% block body %}
-<h1 class="mb-4">⚙️ Admin Dashboard</h1>
+    <h1 class="mb-4 text-center">⚙️ Admin Dashboard</h1>
 
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <h5 class="card-title">Total Products</h5>
-                <h2>{{ totalProducts }}</h2>
-                <a href="{{ path('admin_products') }}" class="btn btn-light btn-sm">Manage</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card text-white bg-info">
-            <div class="card-body">
-                <h5 class="card-title">Total Orders</h5>
-                <h2>{{ totalOrders }}</h2>
-                <a href="{{ path('admin_orders') }}" class="btn btn-light btn-sm">Manage</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card text-white" style="background: var(--eco-dark);">
-            <div class="card-body">
-                <h5 class="card-title">Total Users</h5>
-                <h2>{{ totalUsers }}</h2>
-                <a href="{{ path('admin_users') }}" class="btn btn-light btn-sm">Manage</a>
-            </div>
-        </div>
-    </div>
-</div>
+    <div class="row g-4 mb-4">
 
-<div class="card">
-    <div class="card-body">
-        <h4 class="card-title mb-4">Recent Orders</h4>
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-white bg-success shadow-sm" style="border-radius: 15px;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Products</h5>
+                    <h2 class="fw-bold">{{ totalProducts }}</h2>
+                    <a href="{{ path('admin_products') }}" class="btn btn-light btn-sm">Manage</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-white bg-info shadow-sm" style="border-radius: 15px;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Orders</h5>
+                    <h2 class="fw-bold">{{ totalOrders }}</h2>
+                    <a href="{{ path('admin_orders') }}" class="btn btn-light btn-sm">Manage</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-white shadow-sm" style="background: var(--eco-dark); border-radius: 15px;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Users</h5>
+                    <h2 class="fw-bold">{{ totalUsers }}</h2>
+                    <a href="{{ path('admin_users') }}" class="btn btn-light btn-sm">Manage</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-white shadow-sm" style="background: #8e44ad; border-radius: 15px;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Categories</h5>
+                    <h2 class="fw-bold">{{ totalCategories }}</h2>
+                    <a href="{{ path('admin_categories') }}" class="btn btn-light btn-sm">Manage</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm" style="border-radius: 15px;">
+        <div class="card-body">
+            <h4 class="card-title mb-4">Recent Orders</h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
                     <tr>
                         <th>Order #</th>
                         <th>Customer</th>
@@ -49,32 +63,39 @@
                         <th>Date</th>
                         <th>Action</th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     {% for order in recentOrders %}
-                    <tr>
-                        <td><strong>{{ order.orderNumber }}</strong></td>
-                        <td>{{ order.user.prenom ~ ' ' ~ order.user.nom }}</td>
-                        <td>{{ order.totalAmount }} TND</td>
-                        <td>
-                            <span class="badge bg-{{ order.status == 'delivered' ? 'success' : 'warning' }}">
-                                {{ order.status|title }}
-                            </span>
-                        </td>
-                        <td>{{ order.createdAt|date('d M Y') }}</td>
-                        <td>
-                            <a href="{{ path('admin_order_show', {id: order.id}) }}" 
-                               class="btn btn-sm btn-eco">View</a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td><strong>{{ order.orderNumber }}</strong></td>
+                            <td>{{ order.user.prenom ~ ' ' ~ order.user.nom }}</td>
+                            <td>{{ order.totalAmount }} TND</td>
+                            <td>
+                                {% if order.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elseif order.status == 'processing' %}
+                                    <span class="badge bg-info">Processing</span>
+                                {% elseif order.status == 'shipped' %}
+                                    <span class="badge bg-primary">Shipped</span>
+                                {% elseif order.status == 'delivered' %}
+                                    <span class="badge bg-success">Delivered</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ order.status|title }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ order.createdAt|date('d M Y') }}</td>
+                            <td>
+                                <a href="{{ path('admin_order_show', {id: order.id}) }}" class="btn btn-sm btn-eco">View</a>
+                            </td>
+                        </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center">No orders yet</td>
-                    </tr>
+                        <tr>
+                            <td colspan="6" class="text-center">No orders yet</td>
+                        </tr>
                     {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

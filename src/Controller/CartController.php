@@ -2,128 +2,130 @@
 
 namespace App\Controller;
 
-use App\Entity\Cart;
-use App\Entity\CartItem;
 use App\Entity\Product;
-use App\Repository\CartRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/cart')]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_CLIENT')]
 class CartController extends AbstractController
 {
-    #[Route('/', name: 'cart_index')]
-    public function index(CartRepository $cartRepository): Response
-    {
-        $user = $this->getUser();
-        $cart = $cartRepository->findOneBy(['user' => $user]);
+    private const COOKIE_NAME = 'eco_cart';
+    private const COOKIE_LIFETIME = 3600*24*30; // 30 days
 
-        if (!$cart) {
-            $cart = new Cart();
-            $cart->setUser($user);
+    private function getCart(Request $request): array
+    {
+        $cart = $request->cookies->get(self::COOKIE_NAME);
+        return $cart ? json_decode($cart, true) : [];
+    }
+
+    private function saveCart(Response $response, array $cart): void
+    {
+        $cookie = Cookie::create(self::COOKIE_NAME)
+            ->withValue(json_encode($cart))
+            ->withExpires(time() + self::COOKIE_LIFETIME)
+            ->withPath('/')
+            ->withHttpOnly(true);
+
+        $response->headers->setCookie($cookie);
+    }
+
+    #[Route('/', name: 'cart_index')]
+    public function index(Request $request, ProductRepository $productRepository): Response
+    {
+        $cartData = $this->getCart($request);
+
+        $cartItems = [];
+        $total = 0;
+        $totalItems = 0;
+
+        foreach ($cartData as $productId => $quantity) {
+            $product = $productRepository->find($productId);
+            if (!$product) continue;
+            $subtotal = $product->getPrix() * $quantity;
+            $cartItems[] = [
+                'id' => $product->getId(),
+                'product' => $product,
+                'quantity' => $quantity,
+                'subtotal' => $subtotal
+            ];
+            $total += $subtotal;
+            $totalItems += $quantity;
         }
 
+        // Build a "cart object" like your Twig expects
+        $cart = (object)[
+            'cartItems' => $cartItems,
+            'total' => $total,
+            'totalItems' => $totalItems
+        ];
+
         return $this->render('cart/index.html.twig', [
-            'cart' => $cart,
+            'cart' => $cart
         ]);
     }
 
     #[Route('/add/{id}', name: 'cart_add')]
-    public function add(
-        Product $product,
-        CartRepository $cartRepository,
-        EntityManagerInterface $em
-    ): Response {
-        $user = $this->getUser();
-        $cart = $cartRepository->findOneBy(['user' => $user]);
-
-        if (!$cart) {
-            $cart = new Cart();
-            $cart->setUser($user);
-            $em->persist($cart);
+    public function add(int $id, Request $request, ProductRepository $productRepository): Response
+    {
+        $product = $productRepository->find($id);
+        if (!$product) {
+            throw $this->createNotFoundException('Product not found');
         }
 
-        // Check if product already in cart
-        $existingItem = null;
-        foreach ($cart->getCartItems() as $item) {
-            if ($item->getProduct()->getId() === $product->getId()) {
-                $existingItem = $item;
-                break;
-            }
-        }
+        $cart = $this->getCart($request);
+        $cart[$id] = ($cart[$id] ?? 0) + 1;
 
-        if ($existingItem) {
-            // Increase quantity if already exists
-            $existingItem->setQuantity($existingItem->getQuantity() + 1);
-        } else {
-            // Add new item to cart
-            $cartItem = new CartItem();
-            $cartItem->setCart($cart);
-            $cartItem->setProduct($product);
-            $cartItem->setQuantity(1);
-            $cart->addCartItem($cartItem);
-            $em->persist($cartItem);
-        }
-
-        $cart->setUpdatedAt(new \DateTimeImmutable());
-        $em->flush();
-
+        $response = $this->redirectToRoute('cart_index');
+        $this->saveCart($response, $cart);
         $this->addFlash('success', 'Product added to cart!');
-        return $this->redirectToRoute('cart_index');
+        return $response;
     }
 
     #[Route('/remove/{id}', name: 'cart_remove')]
-    public function remove(
-        CartItem $cartItem,
-        EntityManagerInterface $em
-    ): Response {
-        $cart = $cartItem->getCart();
-        $cart->removeCartItem($cartItem);
-        $em->remove($cartItem);
-        $em->flush();
+    public function remove(int $id, Request $request): Response
+    {
+        $cart = $this->getCart($request);
+        if (isset($cart[$id])) {
+            unset($cart[$id]);
+        }
 
+        $response = $this->redirectToRoute('cart_index');
+        $this->saveCart($response, $cart);
         $this->addFlash('success', 'Item removed from cart!');
-        return $this->redirectToRoute('cart_index');
+        return $response;
     }
 
     #[Route('/update/{id}/{action}', name: 'cart_update')]
-    public function update(
-        CartItem $cartItem,
-        string $action,
-        EntityManagerInterface $em
-    ): Response {
-        if ($action === 'increase') {
-            $cartItem->setQuantity($cartItem->getQuantity() + 1);
-        } elseif ($action === 'decrease' && $cartItem->getQuantity() > 1) {
-            $cartItem->setQuantity($cartItem->getQuantity() - 1);
+    public function update(int $id, string $action, Request $request): Response
+    {
+        $cart = $this->getCart($request);
+        if (!isset($cart[$id])) {
+            return $this->redirectToRoute('cart_index');
         }
 
-        $cartItem->getCart()->setUpdatedAt(new \DateTimeImmutable());
-        $em->flush();
+        if ($action === 'increase') {
+            $cart[$id]++;
+        } elseif ($action === 'decrease') {
+            $cart[$id] = max(1, $cart[$id] - 1);
+        }
 
-        return $this->redirectToRoute('cart_index');
+        $response = $this->redirectToRoute('cart_index');
+        $this->saveCart($response, $cart);
+        return $response;
     }
 
     #[Route('/clear', name: 'cart_clear')]
-    public function clear(
-        CartRepository $cartRepository,
-        EntityManagerInterface $em
-    ): Response {
-        $user = $this->getUser();
-        $cart = $cartRepository->findOneBy(['user' => $user]);
-
-        if ($cart) {
-            foreach ($cart->getCartItems() as $item) {
-                $em->remove($item);
-            }
-            $em->flush();
-        }
-
+    public function clear(Request $request): Response
+    {
+        $response = $this->redirectToRoute('cart_index');
+        $this->saveCart($response, []);
         $this->addFlash('success', 'Cart cleared!');
-        return $this->redirectToRoute('cart_index');
+        return $response;
     }
 }

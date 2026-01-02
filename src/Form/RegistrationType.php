@@ -75,9 +75,13 @@ class RegistrationType extends AbstractType
                     'constraints' => [
                         new NotBlank(['message' => 'Please enter a password']),
                         new Length([
-                            'min' => 6,
-                            'minMessage' => 'Your password should be at least {{ limit }} characters',
+                            'min' => 8,
+                            'minMessage' => 'Password must be at least {{ limit }} characters',
                             'max' => 4096,
+                        ]),
+                        new Regex([
+                            'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
+                            'message' => 'Password must include at least one uppercase, one lowercase, one number, and one symbol',
                         ]),
                     ],
                     'attr' => [
@@ -98,29 +102,32 @@ class RegistrationType extends AbstractType
                 'label' => 'Phone',
                 'constraints' => [
                     new NotBlank(['message' => 'Please enter your phone number']),
-                    new Length([
-                        'max' => 20,
-                        'maxMessage' => 'Phone number cannot be longer than {{ limit }} characters',
-                    ]),
                     new Regex([
-                        'pattern' => '/^[0-9\s\-\+\(\)]+$/',
-                        'message' => 'Please enter a valid phone number',
+                        'pattern' => '/^[0-9]{8}$/',
+                        'message' => 'Invalid phone number (must be 8 digits)',
                     ]),
                 ],
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => '+216 XX XXX XXX'
+                    'placeholder' => '12345678',
                 ],
             ])
-            ->add('adresse', TextareaType::class, [
-                'label' => 'Address',
+            ->add('street', TextType::class, [
+                'label' => 'Street',
+                'attr' => ['class' => 'form-control'],
+                'constraints' => [new NotBlank(['message' => 'Please enter your street'])],
+            ])
+            ->add('city', TextType::class, [
+                'label' => 'City',
+                'attr' => ['class' => 'form-control'],
+                'constraints' => [new NotBlank(['message' => 'Please enter your city'])],
+            ])
+            ->add('postalCode', TextType::class, [
+                'label' => 'Postal Code',
+                'attr' => ['class' => 'form-control'],
                 'constraints' => [
-                    new NotBlank(['message' => 'Please enter your address']),
-                ],
-                'attr' => [
-                    'class' => 'form-control',
-                    'rows' => 3,
-                    'placeholder' => 'Enter your full address'
+                    new NotBlank(['message' => 'Please enter your postal code']),
+                    new Regex(['pattern' => '/^\d{4,5}$/', 'message' => 'Postal code must be 4-5 digits'])
                 ],
             ])
             ->add('agreeTerms', CheckboxType::class, [

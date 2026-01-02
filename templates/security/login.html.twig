@@ -3,59 +3,108 @@
 {% block title %}Login - EcoStore{% endblock %}
 
 {% block body %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-lg border-0" style="border-radius: 20px;">
-            <div class="card-body p-5">
-                <div class="text-center mb-4">
-                    <h2 class="fw-bold">🌱 Welcome Back!</h2>
-                    <p class="text-muted">Login to your EcoStore account</p>
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0" style="border-radius: 20px;">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold">🌱 Welcome Back!</h2>
+                        <p class="text-muted">Login to your EcoStore account</p>
+                    </div>
+
+                    {% if error %}
+                        <div class="alert alert-danger text-center">
+                            Invalid email or password.
+                        </div>
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input
+                                type="text" {# use text instead of email to avoid HTML validation #}
+                                class="form-control {% if error %}is-invalid{% endif %}"
+                                id="email"
+                                name="_username"
+                                value="{{ last_username }}"
+                                required
+                                autofocus
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+
+                            <div class="input-group">
+                                <input
+                                    type="password"
+                                    class="form-control {% if error %}is-invalid{% endif %}"
+                                    id="password"
+                                    name="_password"
+                                    required
+                                >
+                                <button
+                                    class="btn btn-outline-secondary"
+                                    type="button"
+                                    id="togglePassword"
+                                >
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+
+                            {% if error %}
+                                <div class="invalid-feedback">
+                                    Invalid credentials.
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember" name="_remember_me">
+                            <label class="form-check-label" for="remember">Remember me</label>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <button type="submit" class="btn btn-eco w-100 py-2 mb-3">
+                            Login
+                        </button>
+                    </form>
+
+                    <hr>
+                    <p class="text-center mb-0">
+                        Don't have an account?
+                        <a href="{{ path('app_register') }}" class="text-success fw-bold">Register here</a>
+                    </p>
                 </div>
-
-                {% if error %}
-                    <div class="alert alert-danger">
-                        {{ error.messageKey|trans(error.messageData, 'security') }}
-                    </div>
-                {% endif %}
-
-                <form method="post">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" 
-                               class="form-control" 
-                               id="email" 
-                               name="_username" 
-                               value="{{ last_username }}" 
-                               required 
-                               autofocus>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" 
-                               class="form-control" 
-                               id="password" 
-                               name="_password" 
-                               required>
-                    </div>
-
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember" name="_remember_me">
-                        <label class="form-check-label" for="remember">Remember me</label>
-                    </div>
-
-                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-                    <button type="submit" class="btn btn-eco w-100 py-2 mb-3">Login</button>
-                </form>
-
-                <hr>
-                <p class="text-center mb-0">
-                    Don't have an account? 
-                    <a href="{{ path('app_register') }}" class="text-success fw-bold">Register here</a>
-                </p>
             </div>
         </div>
     </div>
-</div>
+
 {% endblock %}
+    {% block javascripts %}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const password = document.getElementById('password');
+                const toggle = document.getElementById('togglePassword');
+
+                if (!password || !toggle) return; // safety check
+
+                const icon = toggle.querySelector('i');
+
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+
+                    if (password.type === 'password') {
+                        password.type = 'text';
+                        icon.classList.remove('bi-eye');
+                        icon.classList.add('bi-eye-slash');
+                    } else {
+                        password.type = 'password';
+                        icon.classList.remove('bi-eye-slash');
+                        icon.classList.add('bi-eye');
+                    }
+                });
+            });
+        </script>
+    {% endblock %}

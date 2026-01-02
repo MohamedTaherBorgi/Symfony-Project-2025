@@ -3,13 +3,13 @@
 {% block title %}Manage Orders - Admin{% endblock %}
 
 {% block body %}
-<h1 class="mb-4">📦 Manage Orders</h1>
+    <h1 class="mb-4">📦 Manage Orders</h1>
 
-<div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
                     <tr>
                         <th>Order #</th>
                         <th>Customer</th>
@@ -19,35 +19,43 @@
                         <th>Date</th>
                         <th>Actions</th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     {% for order in orders %}
-                    <tr>
-                        <td><strong>{{ order.orderNumber }}</strong></td>
-                        <td>{{ order.user.prenom ~ ' ' ~ order.user.nom }}</td>
-                        <td>{{ order.totalAmount }} TND</td>
-                        <td>
-                            <span class="badge bg-info">{{ order.paymentMethod|title|replace({'_': ' '}) }}</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-{{ order.status == 'delivered' ? 'success' : 'warning' }}">
-                                {{ order.status|title }}
-                            </span>
-                        </td>
-                        <td>{{ order.createdAt|date('d M Y') }}</td>
-                        <td>
-                            <a href="{{ path('admin_order_show', {id: order.id}) }}" 
-                               class="btn btn-sm btn-eco">View</a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td><strong>{{ order.orderNumber }}</strong></td>
+                            <td>{{ order.user.prenom ~ ' ' ~ order.user.nom }}</td>
+                            <td>{{ order.totalAmount }} TND</td>
+                            <td>
+                                <span class="badge bg-info">{{ order.paymentMethod|title|replace({'_': ' '}) }}</span>
+                            </td>
+                            <td>
+                                {% if order.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elseif order.status == 'processing' %}
+                                    <span class="badge bg-info">Processing</span>
+                                {% elseif order.status == 'shipped' %}
+                                    <span class="badge bg-primary">Shipped</span>
+                                {% elseif order.status == 'delivered' %}
+                                    <span class="badge bg-success">Delivered</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ order.status|title }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ order.createdAt|date('d M Y') }}</td>
+                            <td>
+                                <a href="{{ path('admin_order_show', {id: order.id}) }}"
+                                   class="btn btn-sm btn-eco">View</a>
+                            </td>
+                        </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="7" class="text-center">No orders yet</td>
-                    </tr>
+                        <tr>
+                            <td colspan="7" class="text-center">No orders yet</td>
+                        </tr>
                     {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

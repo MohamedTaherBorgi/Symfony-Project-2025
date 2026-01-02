@@ -26,13 +26,17 @@ security:
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
+                path: /
+                always_remember_me: false
 
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/cart, roles: ROLE_USER }
-        - { path: ^/order, roles: ROLE_USER }
+        - { path: ^/cart, roles: ROLE_CLIENT }
+        - { path: ^/order, roles: ROLE_CLIENT }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/profile, roles: ROLE_CLIENT }
+
 
     role_hierarchy:
-        ROLE_ADMIN: ROLE_USER
+        ROLE_ADMIN: ROLE_CLIENT

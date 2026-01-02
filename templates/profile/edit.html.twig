@@ -7,58 +7,83 @@
 
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
-
             <div class="card shadow-sm" style="border-radius: 15px;">
                 <div class="card-body p-4">
 
                     <div class="text-center mb-4">
-                        <img src="/uploads/users/{{ app.user.image }}"
-                             class="rounded-circle shadow"
+                        <img src="/uploads/users/{{ app.user.image }}" class="rounded-circle shadow"
                              style="width:120px; height:120px; object-fit:cover;">
                     </div>
 
-                    {{ form_start(form) }}
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-                    <div class="mb-3">
-                        {{ form_label(form.prenom) }}
-                        {{ form_widget(form.prenom) }}
-                        {{ form_errors(form.prenom) }}
+                    {# First & Last Name #}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form_label(form.prenom) }}
+                            {{ form_widget(form.prenom, {'attr': {'class': 'form-control' ~ (form.prenom.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {% for error in form.prenom.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.nom) }}
+                            {{ form_widget(form.nom, {'attr': {'class': 'form-control' ~ (form.nom.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {% for error in form.nom.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        {{ form_label(form.nom) }}
-                        {{ form_widget(form.nom) }}
-                        {{ form_errors(form.nom) }}
-                    </div>
-
+                    {# Email (disabled) #}
                     <div class="mb-3">
                         {{ form_label(form.email) }}
-                        {{ form_widget(form.email) }}
-                        {{ form_errors(form.email) }}
+                        {{ form_widget(form.email, {'attr': {'class': 'form-control' ~ (form.email.vars.errors|length ? ' is-invalid' : '')}}) }}
                     </div>
 
+                    {# Password #}
                     <div class="mb-3">
                         {{ form_label(form.plainPassword) }}
-                        {{ form_widget(form.plainPassword) }}
-                        {{ form_errors(form.plainPassword) }}
+                        {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control' ~ (form.plainPassword.vars.errors|length ? ' is-invalid' : '')}}) }}
+                        {% for error in form.plainPassword.vars.errors %}
+                            <div class="invalid-feedback">{{ error.message }}</div>
+                        {% endfor %}
                     </div>
 
+                    {# Telephone #}
                     <div class="mb-3">
                         {{ form_label(form.telephone) }}
-                        {{ form_widget(form.telephone) }}
-                        {{ form_errors(form.telephone) }}
+                        <div class="input-group">
+                            <span class="input-group-text">+216</span>
+                            {{ form_widget(form.telephone, {'attr': {'class': 'form-control' ~ (form.telephone.vars.errors|length ? ' is-invalid' : ''), 'placeholder':'12345678'}}) }}
+                        </div>
+                        {% for error in form.telephone.vars.errors %}
+                            <div class="invalid-feedback d-block">{{ error.message }}</div>
+                        {% endfor %}
                     </div>
 
+                    {# Address #}
                     <div class="mb-3">
-                        {{ form_label(form.adresse) }}
-                        {{ form_widget(form.adresse) }}
-                        {{ form_errors(form.adresse) }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.street) }}
+                                {{ form_widget(form.street, {'attr': {'class':'form-control' ~ (form.street.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.city) }}
+                                {{ form_widget(form.city, {'attr': {'class':'form-control' ~ (form.city.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            </div>
+                            <div class="col-md-12">
+                                {{ form_label(form.postalCode) }}
+                                {{ form_widget(form.postalCode, {'attr': {'class':'form-control' ~ (form.postalCode.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            </div>
+                        </div>
                     </div>
 
+                    {# Profile Image #}
                     <div class="mb-3">
                         {{ form_label(form.imageFile) }}
-                        {{ form_widget(form.imageFile) }}
-                        {{ form_errors(form.imageFile) }}
+                        {{ form_widget(form.imageFile, {'attr': {'class': 'form-control' ~ (form.imageFile.vars.errors|length ? ' is-invalid' : '')}}) }}
                     </div>
 
                     <div class="mt-4 d-flex justify-content-between">
@@ -66,41 +91,99 @@
                         <a href="{{ path('app_home') }}" class="btn btn-outline-secondary px-4">Cancel</a>
                     </div>
 
-                    {{ form_end(form) }}
+                    {% if showCurrentPasswordModal and newPasswordField is defined %}
+                        <input type="hidden" name="plainPasswordHidden" value="{{ newPasswordField }}">
+                    {% endif %}
 
+                    {{ form_end(form) }}
+                    {# Delete Account Button #}
                     <button class="btn btn-danger w-100 mt-4" data-bs-toggle="modal"
                             data-bs-target="#confirmDeleteModal">
                         Delete My Account
                     </button>
 
-                    <div class="modal fade" id="confirmDeleteModal" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content" style="border-radius: 15px;">
-                                <div class="modal-header bg-danger text-white">
-                                    <h5 class="modal-title">Confirm Account Deletion</h5>
-                                    <button type="button" class="btn-close btn-close-white"
-                                            data-bs-dismiss="modal"></button>
-                                </div>
-
-                                <div class="modal-body">
-                                    <p>This action is permanent. All your data will be removed.</p>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <form action="{{ path('app_profile_delete') }}" method="POST">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
-                                        <button type="submit" class="btn btn-danger">Yes, delete my account</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
-
         </div>
     </div>
 
+    {# Delete Confirmation Modal #}
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Account Deletion</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>This action is permanent. All your data will be removed. Are you sure?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ path('app_profile_delete') }}" method="POST">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
+                        <button type="submit" class="btn btn-danger">Yes, delete my account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Current Password Modal #}
+    <div class="modal fade" id="currentPasswordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:15px;">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Confirm Current Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>To save changes, please enter your current password:</p>
+                    <input type="password" class="form-control" id="currentPasswordInput"
+                           placeholder="Current Password">
+                    <div class="invalid-feedback mt-2" id="currentPasswordError"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmPasswordBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {% if showCurrentPasswordModal %}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modal = new bootstrap.Modal(document.getElementById('currentPasswordModal'));
+                modal.show();
+
+                const confirmBtn = document.getElementById('confirmPasswordBtn');
+                const currentPasswordInput = document.getElementById('currentPasswordInput');
+                const currentPasswordError = document.getElementById('currentPasswordError');
+                const form = document.querySelector('form');
+
+                confirmBtn.addEventListener('click', () => {
+                    const currentPassword = currentPasswordInput.value.trim();
+                    if (!currentPassword) {
+                        currentPasswordError.textContent = 'Please enter your current password';
+                        currentPasswordInput.classList.add('is-invalid');
+                        return;
+                    }
+                    currentPasswordInput.classList.remove('is-invalid');
+                    currentPasswordError.textContent = '';
+
+                    let hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'currentPasswordConfirmed';
+                    hiddenInput.value = currentPassword;
+                    form.appendChild(hiddenInput);
+
+                    modal.hide();
+                    form.submit();
+                });
+            });
+        </script>
+    {% endif %}
 {% endblock %}

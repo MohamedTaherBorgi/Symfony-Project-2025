@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\FormError;
 
 class RegistrationController extends AbstractController
 {
@@ -27,24 +28,41 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationType::class, $user);
         $form->handleRequest($request);
 
+        // Initialize variable for Twig
+        $emailExists = false;
+
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hash password
-            $hashedPassword = $passwordHasher->hashPassword(
-                $user,
-                $form->get('plainPassword')->getData()
-            );
-            $user->setPassword($hashedPassword);
+            // Check email uniqueness
+            $existingUser = $entityManager->getRepository(User::class)
+                ->findOneBy(['email' => $user->getEmail()]);
 
-            // Save user
-            $entityManager->persist($user);
-            $entityManager->flush();
+            if ($existingUser) {
+                // Email exists, show modal
+                $form->get('email')->addError(new FormError('This email is already registered.'));
+                $emailExists = true;
+            } else {
+                // Hash password
+                $hashedPassword = $passwordHasher->hashPassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                );
+                $user->setPassword($hashedPassword);
 
-            $this->addFlash('success', 'Account created successfully! Please login.');
-            return $this->redirectToRoute('app_login');
+                // Set default role
+                $user->setRoles(['ROLE_CLIENT']);
+
+                // Save user
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Account created successfully! Please login.');
+                return $this->redirectToRoute('app_login');
+            }
         }
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
+            'emailExists' => $emailExists, // pass variable to Twig
         ]);
     }
 }
