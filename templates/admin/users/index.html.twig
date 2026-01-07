@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Users - Admin{% endblock %}
+
+{% block body %}
+<h1 class="mb-4">👥 Manage Users</h1>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Roles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.prenom ~ ' ' ~ user.nom }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.telephone }}</td>
+                        <td>
+                            {% for role in user.roles %}
+                                <span class="badge bg-{{ role == 'ROLE_ADMIN' ? 'danger' : 'secondary' }}">
+                                    {{ role }}
+                                </span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

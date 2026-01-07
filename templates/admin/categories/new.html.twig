@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if form.vars.value.id %}
+        New Category
+    {% else %}
+        Add Category
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+
+    <h1 class="mb-4 text-center">
+        {% if form.vars.value.id %}
+            ✏️ Edit Category
+        {% else %}
+            ➕ Add Category
+        {% endif %}
+    </h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card shadow-sm" style="border-radius: 15px;">
+                <div class="card-body p-4">
+
+                    {{ form_start(form) }}
+
+                    <div class="mb-3">
+                        {{ form_label(form.nom) }}
+                        {{ form_widget(form.nom, { attr: { class: 'form-control' } }) }}
+                        {{ form_errors(form.nom) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.description) }}
+                        {{ form_widget(form.description, { attr: { class: 'form-control' } }) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-between">
+                        <button type="submit" class="btn btn-eco px-4">
+                            {% if form.vars.value.id %}
+                                Update
+                            {% else %}
+                                Save
+                            {% endif %}
+                        </button>
+
+                        <a href="{{ path('admin_categories') }}" class="btn btn-outline-secondary px-4">
+                            Cancel
+                        </a>
+                    </div>
+
+                    {{ form_end(form) }}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
