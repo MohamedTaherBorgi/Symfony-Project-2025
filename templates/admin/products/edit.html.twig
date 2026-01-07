@@ -1,0 +1,442 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if form.vars.value.id %}
+        Edit Product - EcoStore
+    {% else %}
+        Add Product - EcoStore
+    {% endif %}
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .product-form-page {
+        padding: 2rem 0;
+    }
+
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+        color: #6b7b75;
+    }
+
+    .breadcrumb a {
+        color: var(--sage-primary);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .breadcrumb a:hover {
+        color: var(--forest-dark);
+    }
+
+    .breadcrumb-separator {
+        color: #d0d0d0;
+    }
+
+    .page-header {
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: var(--forest-deep);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .title-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(46, 125, 50, 0.15));
+        color: #2e7d32;
+    }
+
+    .page-subtitle {
+        color: var(--charcoal);
+        font-size: 1.05rem;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #4caf50, #2e7d32);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--forest-deep);
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
+        color: var(--charcoal);
+        background: #f8f9fa;
+        border: 2px solid transparent;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        outline: none;
+        background: white;
+        border-color: var(--sage-primary);
+        box-shadow: 0 0 0 3px rgba(107, 123, 117, 0.1);
+    }
+
+    .form-control::placeholder {
+        color: #9e9e9e;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    select.form-control {
+        cursor: pointer;
+    }
+
+    .form-error {
+        display: block;
+        color: #d32f2f;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Current Image Display */
+    .current-image {
+        text-align: center;
+        margin-top: 1rem;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .current-image img {
+        max-height: 200px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .current-image-label {
+        display: block;
+        font-size: 0.85rem;
+        color: #6b7b75;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .btn-form {
+        flex: 1;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-submit {
+        background: var(--sage-primary);
+        color: white;
+        box-shadow: 0 2px 8px rgba(107, 123, 117, 0.2);
+    }
+
+    .btn-submit:hover {
+        background: var(--forest-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(107, 123, 117, 0.3);
+    }
+
+    .btn-cancel {
+        background: #e0e0e0;
+        color: var(--charcoal);
+    }
+
+    .btn-cancel:hover {
+        background: #d0d0d0;
+        color: var(--charcoal);
+        transform: translateY(-2px);
+    }
+
+    /* Form Info Box */
+    .form-info {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.08), rgba(46, 125, 50, 0.08));
+        border-left: 4px solid #4caf50;
+        border-radius: 8px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-info-title {
+        font-weight: 600;
+        color: #2e7d32;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-info-text {
+        color: var(--charcoal);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
+            flex-direction: column;
+        }
+
+        .form-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-form {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="product-form-page">
+    <div class="breadcrumb">
+        <a href="{{ path('admin_dashboard') }}">Dashboard</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="{{ path('product_index') }}">Products</a>
+        <span class="breadcrumb-separator">/</span>
+        <span>{% if form.vars.value.id %}Edit{% else %}Add{% endif %}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 class="page-title">
+            <span class="title-icon">
+                {% if form.vars.value.id %}
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                {% else %}
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                {% endif %}
+            </span>
+            {% if form.vars.value.id %}
+                Edit Product
+            {% else %}
+                Add New Product
+            {% endif %}
+        </h1>
+        <p class="page-subtitle">
+            {% if form.vars.value.id %}
+                Update product information
+            {% else %}
+                Add a new product to your inventory
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="form-container">
+        <div class="form-card">
+            {% if not form.vars.value.id %}
+                <div class="form-info">
+                    <div class="form-info-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        Quick Tip
+                    </div>
+                    <p class="form-info-text">
+                        Provide detailed product information to help customers make informed purchasing decisions. High-quality images and accurate descriptions increase sales.
+                    </p>
+                </div>
+            {% endif %}
+
+            {{ form_start(form) }}
+
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    {{ form_label(form.nom, 'Product Name') }}
+                    {{ form_widget(form.nom, { 
+                        attr: { 
+                            class: 'form-control',
+                            placeholder: 'e.g., Bamboo Toothbrush'
+                        } 
+                    }) }}
+                    {{ form_errors(form.nom) }}
+                </div>
+
+                <div class="form-group full-width">
+                    {{ form_label(form.description, 'Description') }}
+                    {{ form_widget(form.description, { 
+                        attr: { 
+                            class: 'form-control',
+                            placeholder: 'Provide a detailed description of the product...'
+                        } 
+                    }) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.prix, 'Price (TND)') }}
+                    {{ form_widget(form.prix, { 
+                        attr: { 
+                            class: 'form-control',
+                            placeholder: '0.00'
+                        } 
+                    }) }}
+                    {{ form_errors(form.prix) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.stock, 'Stock Quantity') }}
+                    {{ form_widget(form.stock, { 
+                        attr: { 
+                            class: 'form-control',
+                            placeholder: '0'
+                        } 
+                    }) }}
+                    {{ form_errors(form.stock) }}
+                </div>
+
+                <div class="form-group full-width">
+                    {{ form_label(form.category, 'Category') }}
+                    {{ form_widget(form.category, { 
+                        attr: { 
+                            class: 'form-control'
+                        } 
+                    }) }}
+                    {{ form_errors(form.category) }}
+                </div>
+
+                <div class="form-group full-width">
+                    {{ form_label(form.imageFile, 'Product Image') }}
+                    {{ form_widget(form.imageFile, { 
+                        attr: { 
+                            class: 'form-control'
+                        } 
+                    }) }}
+                    {{ form_errors(form.imageFile) }}
+                    
+                    {% if form.vars.value.image %}
+                        <div class="current-image">
+                            <span class="current-image-label">Current Image</span>
+                            <img src="{{ asset('uploads/products/' ~ form.vars.value.image) }}" alt="Current product image">
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-form btn-submit">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    {% if form.vars.value.id %}
+                        Update Product
+                    {% else %}
+                        Save Product
+                    {% endif %}
+                </button>
+
+                <a href="{{ path('product_index') }}" class="btn-form btn-cancel">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Cancel
+                </a>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

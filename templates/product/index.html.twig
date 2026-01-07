@@ -1,0 +1,329 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}All Products - EcoStore{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .products-header {
+        text-align: center;
+        margin: 3rem 0 4rem;
+        position: relative;
+    }
+
+    .products-header::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(107, 144, 128, 0.08) 0%, transparent 70%);
+        z-index: -1;
+        animation: header-pulse 6s ease-in-out infinite;
+    }
+
+    @keyframes header-pulse {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); }
+        50% { transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    .products-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--forest-deep);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .products-subtitle {
+        font-size: 1.2rem;
+        color: var(--charcoal);
+        font-weight: 500;
+    }
+
+    .premium-product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 4rem;
+    }
+
+    .product-card-premium {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .product-card-premium:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-image-container {
+        position: relative;
+        height: 280px;
+        overflow: hidden;
+        background: #f8f8f8;
+    }
+
+    .product-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .product-card-premium:hover .product-image-container img {
+        transform: scale(1.06);
+    }
+
+    .product-category-badge {
+        position: absolute;
+        top: 1.25rem;
+        left: 1.25rem;
+        padding: 0.45rem 1rem;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(8px);
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #3a4f42;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        white-space: nowrap;
+        z-index: 10;
+    }
+
+    .product-content {
+        padding: 1.75rem 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #2c3e37;
+        margin-bottom: 0.65rem;
+        line-height: 1.35;
+    }
+
+    .product-desc {
+        color: #6b7b75;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .product-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-top: auto;
+    }
+
+    .product-price-display {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #3a5a47;
+    }
+
+    .product-price-display span {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #7a9b88;
+        margin-left: 0.2rem;
+    }
+
+    .product-buttons {
+        display: flex;
+        gap: 0.6rem;
+    }
+
+    .btn-view {
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.88rem;
+        border: none;
+        border-radius: 8px;
+        background: #5a7968;
+        color: white;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 6px rgba(90, 121, 104, 0.25);
+        white-space: nowrap;
+    }
+
+    .btn-view:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(90, 121, 104, 0.35);
+        background: #4d6857;
+        color: white;
+    }
+
+    .btn-cart {
+        padding: 0.75rem 1rem;
+        font-size: 1.05rem;
+        border: 1.5px solid #dfe4e1;
+        border-radius: 8px;
+        background: white;
+        color: #5a7968;
+        transition: all 0.25s ease;
+    }
+
+    .btn-cart:hover {
+        background: #f5f7f6;
+        border-color: #5a7968;
+        color: #5a7968;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 6px rgba(90, 121, 104, 0.15);
+    }
+
+    .btn-cart:disabled {
+        border-color: #ccc;
+        color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .btn-cart:disabled:hover {
+        background: white;
+        color: #ccc;
+        transform: none;
+    }
+
+    .no-products {
+        text-align: center;
+        padding: 6rem 2rem;
+        background: linear-gradient(135deg, rgba(107, 144, 128, 0.05), rgba(164, 195, 178, 0.05));
+        border-radius: 32px;
+        margin: 3rem 0;
+    }
+
+    .no-products-icon {
+        font-size: 5rem;
+        margin-bottom: 2rem;
+        animation: float-icon 3s ease-in-out infinite;
+    }
+
+    @keyframes float-icon {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+
+    .no-products-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--forest-deep);
+        margin-bottom: 1rem;
+    }
+
+    .no-products-desc {
+        font-size: 1.1rem;
+        color: var(--charcoal);
+    }
+
+    @media (max-width: 768px) {
+        .products-title {
+            font-size: 2.5rem;
+        }
+
+        .premium-product-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="products-header">
+    <h1 class="products-title">
+        All Eco-Friendly Products
+    </h1>
+    <p class="products-subtitle">Sustainable choices for a better future</p>
+</div>
+
+<div class="premium-product-grid">
+    {% for product in products %}
+    <div class="product-card-premium">
+        <div class="product-image-container">
+            {% if product.image %}
+                <img src="{{ asset('uploads/products/' ~ product.image) }}" alt="{{ product.nom }}">
+            {% else %}
+                <div class="d-flex align-items-center justify-content-center h-100" style="background: linear-gradient(135deg, rgba(107, 144, 128, 0.1), rgba(164, 195, 178, 0.1));">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8L12 2Z" fill="#6b9080" opacity="0.3"/>
+                    </svg>
+                </div>
+            {% endif %}
+            
+            <div class="product-category-badge">{{ product.category.nom }}</div>
+        </div>
+        
+        <div class="product-content">
+            <h3 class="product-name">{{ product.nom }}</h3>
+            <p class="product-desc">
+                {{ product.description|length > 80 ? product.description|slice(0, 80) ~ '...' : product.description }}
+            </p>
+            
+            <div class="product-actions">
+                <div class="product-price-display">
+                    {{ product.prix }} <span>TND</span>
+                </div>
+                
+                <div class="product-buttons">
+                    <a href="{{ path('product_show', {id: product.id}) }}" class="btn btn-view">
+                        View
+                    </a>
+                    
+                    {% if is_granted('ROLE_CLIENT') %}
+                        {% if product.stock > 0 %}
+                            <a href="{{ path('cart_add', {id: product.id}) }}" class="btn btn-cart" title="Add to cart">
+                                <i class="bi bi-cart-plus"></i>
+                            </a>
+                        {% else %}
+                            <button class="btn btn-cart" disabled title="Out of stock">
+                                <i class="bi bi-cart-x"></i>
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn btn-cart" title="Login to purchase">
+                            <i class="bi bi-cart-plus"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1 / -1;">
+        <div class="no-products">
+            <div class="no-products-icon">
+                <svg width="100" height="100" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="#6b9080" stroke-width="1.5" opacity="0.3"/>
+                    <path d="M12 8V12L15 15" stroke="#6b9080" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h2 class="no-products-title">No Products Found</h2>
+            <p class="no-products-desc">Check back soon for eco-friendly products!</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+Update all dependency to latest supported versions:
+
+Update in "composer.json" to:
+"symfony/string": "^7.4"
+
+Run:
+composer update symfony/string --with-all-dependencies
+composer update --with-all-dependencies
+
+################################
+
+in order for migrations to work properly change in ".env":
+DATABASE_URL="mysql://root@localhost:3306/project?serverVersion=10.4.32-MariaDB"

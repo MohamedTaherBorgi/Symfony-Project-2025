@@ -1,0 +1,496 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.nom }} - EcoStore{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .product-detail-section {
+        margin: 3rem 0;
+    }
+
+    .product-image-section {
+        position: relative;
+    }
+
+    .main-product-image {
+        width: 100%;
+        height: 600px;
+        border-radius: 32px;
+        overflow: hidden;
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+        position: relative;
+        background: linear-gradient(135deg, rgba(107, 144, 128, 0.05), rgba(164, 195, 178, 0.05));
+    }
+
+    .main-product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .main-product-image:hover img {
+        transform: scale(1.05);
+    }
+
+    .main-product-image .placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        font-size: 10rem;
+    }
+
+    .product-info-section {
+        position: sticky;
+        top: 120px;
+    }
+
+    .product-category-tag {
+        display: inline-block;
+        padding: 0.6rem 1.5rem;
+        background: linear-gradient(135deg, var(--sage-primary), var(--forest-dark));
+        color: white;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 16px rgba(107, 144, 128, 0.3);
+    }
+
+    .product-detail-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.2rem;
+        font-weight: 800;
+        color: var(--forest-deep);
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .product-detail-desc {
+        font-size: 1.15rem;
+        color: var(--charcoal);
+        line-height: 1.8;
+        margin-bottom: 2.5rem;
+    }
+
+    .product-price-section {
+        background: linear-gradient(135deg, rgba(107, 144, 128, 0.08), rgba(164, 195, 178, 0.08));
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 2px solid rgba(107, 144, 128, 0.15);
+    }
+
+    .price-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--sage-primary);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-detail-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--forest-deep);
+        line-height: 1;
+    }
+
+    .product-detail-price span {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--sage-primary);
+    }
+
+    .stock-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+
+    .stock-info.in-stock {
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.15), rgba(25, 135, 84, 0.15));
+        color: #155724;
+        border: 2px solid rgba(40, 167, 69, 0.3);
+    }
+
+    .stock-info.low-stock {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
+        color: #856404;
+        border: 2px solid rgba(255, 193, 7, 0.3);
+    }
+
+    .stock-info.out-stock {
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.15), rgba(200, 35, 51, 0.15));
+        color: #721c24;
+        border: 2px solid rgba(220, 53, 69, 0.3);
+    }
+
+    .stock-icon {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        animation: pulse-stock 2s ease-in-out infinite;
+    }
+
+    .stock-info.in-stock .stock-icon {
+        background: #28a745;
+    }
+
+    .stock-info.low-stock .stock-icon {
+        background: #ffc107;
+    }
+
+    .stock-info.out-stock .stock-icon {
+        background: #dc3545;
+    }
+
+    @keyframes pulse-stock {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.2); }
+    }
+
+    .product-actions-group {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-add-to-cart {
+        flex: 1;
+        padding: 1.3rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border: none;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--sage-primary), var(--forest-dark));
+        color: white;
+        box-shadow: 0 8px 28px rgba(107, 144, 128, 0.4);
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-add-to-cart::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-add-to-cart:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-add-to-cart:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 40px rgba(61, 90, 71, 0.5);
+        color: white;
+    }
+
+    .btn-add-to-cart:disabled {
+        background: linear-gradient(135deg, #ccc, #999);
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    .btn-add-to-cart:disabled:hover {
+        transform: none;
+    }
+
+    .btn-add-to-cart span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-back {
+        padding: 1.3rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: 2px solid var(--sage-primary);
+        border-radius: 16px;
+        background: white;
+        color: var(--sage-primary);
+        transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+        background: var(--sage-primary);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(107, 144, 128, 0.3);
+    }
+
+    /* Related Products */
+    .related-section {
+        margin-top: 6rem;
+        padding-top: 4rem;
+        border-top: 2px solid rgba(107, 144, 128, 0.15);
+    }
+
+    .related-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .related-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: var(--forest-deep);
+        margin-bottom: 1rem;
+    }
+
+    .related-subtitle {
+        font-size: 1.1rem;
+        color: var(--charcoal);
+    }
+
+    .related-product-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .related-product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .related-image {
+        height: 220px;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(107, 144, 128, 0.05), rgba(164, 195, 178, 0.05));
+    }
+
+    .related-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .related-product-card:hover .related-image img {
+        transform: scale(1.1);
+    }
+
+    .related-content {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .related-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--forest-deep);
+        margin-bottom: 0.8rem;
+    }
+
+    .related-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--sage-primary);
+        margin-bottom: 1rem;
+    }
+
+    .related-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+
+    .btn-related-view {
+        flex: 1;
+        padding: 0.8rem 1.2rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--sage-primary), var(--forest-dark));
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-related-view:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(107, 144, 128, 0.4);
+        color: white;
+    }
+
+    .btn-related-cart {
+        padding: 0.8rem 1rem;
+        border: 2px solid var(--sage-primary);
+        border-radius: 12px;
+        background: white;
+        color: var(--sage-primary);
+        transition: all 0.3s ease;
+    }
+
+    .btn-related-cart:hover {
+        background: var(--sage-primary);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .main-product-image {
+            height: 400px;
+        }
+
+        .product-detail-title {
+            font-size: 2.5rem;
+        }
+
+        .product-detail-price {
+            font-size: 2.8rem;
+        }
+
+        .product-actions-group {
+            flex-direction: column;
+        }
+
+        .product-info-section {
+            position: static;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="product-detail-section">
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="product-image-section">
+                <div class="main-product-image">
+                    {% if product.image %}
+                        <img src="{{ asset('uploads/products/' ~ product.image) }}" alt="{{ product.nom }}">
+                    {% else %}
+                        <div class="placeholder">
+                            <span>🌿</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="product-info-section">
+                <div class="product-category-tag">{{ product.category.nom }}</div>
+                
+                <h1 class="product-detail-title">{{ product.nom }}</h1>
+                
+                <p class="product-detail-desc">{{ product.description }}</p>
+                
+                <div class="product-price-section">
+                    <div class="price-label">Price</div>
+                    <div class="product-detail-price">
+                        {{ product.prix }} <span>TND</span>
+                    </div>
+                </div>
+                
+                <div class="stock-info {% if product.stock > 10 %}in-stock{% elseif product.stock > 0 %}low-stock{% else %}out-stock{% endif %}">
+                    <span class="stock-icon"></span>
+                    {% if product.stock > 10 %}
+                        <span>In Stock ({{ product.stock }} available)</span>
+                    {% elseif product.stock > 0 %}
+                        <span>Low Stock (Only {{ product.stock }} left)</span>
+                    {% else %}
+                        <span>Out of Stock</span>
+                    {% endif %}
+                </div>
+                
+                <div class="product-actions-group">
+                    {% if is_granted('ROLE_CLIENT') %}
+                        {% if product.stock > 0 %}
+                            <a href="{{ path('cart_add', {id: product.id}) }}" class="btn btn-add-to-cart">
+                                <span><i class="bi bi-cart-plus me-2"></i>Add to Cart</span>
+                            </a>
+                        {% else %}
+                            <button class="btn btn-add-to-cart" disabled>
+                                <span>Out of Stock</span>
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn btn-add-to-cart">
+                            <span><i class="bi bi-box-arrow-in-right me-2"></i>Login to Purchase</span>
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{{ path('product_index') }}" class="btn btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if related|length > 0 %}
+<div class="related-section">
+    <div class="related-header">
+        <h2 class="related-title">You May Also Like</h2>
+        <p class="related-subtitle">More sustainable products from the same category</p>
+    </div>
+    
+    <div class="row g-4">
+        {% for relatedProduct in related %}
+        <div class="col-lg-3 col-md-6">
+            <div class="related-product-card">
+                <div class="related-image">
+                    {% if relatedProduct.image %}
+                        <img src="{{ asset('uploads/products/' ~ relatedProduct.image) }}" alt="{{ relatedProduct.nom }}">
+                    {% else %}
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <span style="font-size: 4rem;">🌿</span>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="related-content">
+                    <h5 class="related-name">{{ relatedProduct.nom }}</h5>
+                    <p class="related-price">{{ relatedProduct.prix }} TND</p>
+                    
+                    <div class="related-actions">
+                        <a href="{{ path('product_show', {id: relatedProduct.id}) }}" class="btn btn-related-view">
+                            View Details
+                        </a>
+                        {% if is_granted('ROLE_CLIENT') and relatedProduct.stock > 0 %}
+                            <a href="{{ path('cart_add', {id: relatedProduct.id}) }}" class="btn btn-related-cart">
+                                <i class="bi bi-cart-plus"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

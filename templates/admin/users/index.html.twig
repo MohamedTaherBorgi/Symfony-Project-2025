@@ -1,0 +1,295 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Users - EcoStore{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .users-page {
+        padding: 2rem 0;
+    }
+
+    .page-header {
+        margin-bottom: 3rem;
+    }
+
+    .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: var(--forest-deep);
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        color: var(--charcoal);
+        font-size: 1.05rem;
+    }
+
+    .info-box {
+        background: linear-gradient(135deg, rgba(255, 152, 0, 0.08), rgba(239, 108, 0, 0.08));
+        border-left: 4px solid #ff9800;
+        border-radius: 8px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-box-text {
+        color: var(--charcoal);
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .alert-custom {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(46, 125, 50, 0.15));
+        border: none;
+        border-left: 4px solid #4caf50;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+        color: var(--forest-deep);
+        font-weight: 600;
+    }
+
+    .users-container {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Modern Table */
+    .table-modern {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-modern thead th {
+        background: #f8f9fa;
+        color: #6b7b75;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border: none;
+        text-align: left;
+    }
+
+    .table-modern thead th:first-child {
+        border-radius: 8px 0 0 0;
+    }
+
+    .table-modern thead th:last-child {
+        border-radius: 0 8px 0 0;
+    }
+
+    .table-modern tbody tr {
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .table-modern tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .table-modern tbody td {
+        padding: 1.25rem 1rem;
+        color: var(--charcoal);
+        font-size: 0.95rem;
+        vertical-align: middle;
+    }
+
+    .user-id {
+        font-weight: 700;
+        color: var(--sage-primary);
+        font-family: 'Courier New', monospace;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--forest-deep);
+    }
+
+    .user-email {
+        color: #6b7b75;
+    }
+
+    /* Role Radio Buttons */
+    .role-options {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .role-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .role-check input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--sage-primary);
+    }
+
+    .role-check input[type="radio"]:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .role-check label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--charcoal);
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .role-check input[type="radio"]:disabled + label {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    /* Save Button */
+    .btn-save {
+        padding: 0.875rem 2.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        background: var(--sage-primary);
+        color: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(107, 123, 117, 0.2);
+        margin-top: 2rem;
+    }
+
+    .btn-save:hover {
+        background: var(--forest-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(107, 123, 117, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .role-options {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="users-page">
+    <div class="page-header">
+        <h1 class="page-title">Manage Users</h1>
+        <p class="page-subtitle">Manage user roles and permissions</p>
+    </div>
+
+    <div class="info-box">
+        <p class="info-box-text">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            Admin role automatically includes Client permissions
+        </p>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert-custom" role="alert">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <form method="POST">
+        <div class="users-container">
+            <div class="table-responsive">
+                <table class="table-modern">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Roles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            {% set isAdmin = 'ROLE_ADMIN' in user.roles %}
+                            <tr>
+                                <td><span class="user-id">#{{ user.id }}</span></td>
+                                <td><span class="user-name">{{ user.prenom }} {{ user.nom }}</span></td>
+                                <td><span class="user-email">{{ user.email }}</span></td>
+                                <td>{{ user.telephone }}</td>
+                                <td>
+                                    <div class="role-options">
+                                        <div class="role-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="roles_{{ user.id }}"
+                                                value="ROLE_CLIENT"
+                                                id="client_{{ user.id }}"
+                                                {% if not isAdmin %}checked{% endif %}
+                                                {% if user.id == currentUserId %}disabled{% endif %}
+                                            >
+                                            <label for="client_{{ user.id }}">
+                                                Client
+                                            </label>
+                                        </div>
+
+                                        <div class="role-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="roles_{{ user.id }}"
+                                                value="ROLE_ADMIN"
+                                                id="admin_{{ user.id }}"
+                                                {% if isAdmin %}checked{% endif %}
+                                                {% if user.id == currentUserId %}disabled{% endif %}
+                                            >
+                                            <label for="admin_{{ user.id }}">
+                                                Admin
+                                            </label>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="submit" class="btn-save">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Save Roles
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,544 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Profile - EcoStore{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .profile-page {
+        padding: 2rem 0;
+    }
+
+    .page-header {
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: var(--forest-deep);
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        color: var(--charcoal);
+        font-size: 1.05rem;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--sage-primary), var(--forest-dark));
+    }
+
+    /* Profile Image */
+    .profile-image-container {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .profile-image {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: 4px solid white;
+    }
+
+    /* Form Styles */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--forest-deep);
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
+        color: var(--charcoal);
+        background: #f8f9fa;
+        border: 2px solid transparent;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        background: white;
+        border-color: var(--sage-primary);
+        box-shadow: 0 0 0 3px rgba(107, 123, 117, 0.1);
+    }
+
+    .form-control:disabled {
+        background: #e9ecef;
+        cursor: not-allowed;
+    }
+
+    .form-control.is-invalid {
+        border-color: #d32f2f;
+    }
+
+    .invalid-feedback {
+        display: block;
+        color: #d32f2f;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .input-group-text {
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
+        font-weight: 600;
+        background: var(--sage-primary);
+        color: white;
+        border: none;
+        border-radius: 10px 0 0 10px;
+    }
+
+    .input-group .form-control {
+        border-radius: 0 10px 10px 0;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .btn-form {
+        flex: 1;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-submit {
+        background: var(--sage-primary);
+        color: white;
+        box-shadow: 0 2px 8px rgba(107, 123, 117, 0.2);
+    }
+
+    .btn-submit:hover {
+        background: var(--forest-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(107, 123, 117, 0.3);
+    }
+
+    .btn-cancel {
+        background: #e0e0e0;
+        color: var(--charcoal);
+    }
+
+    .btn-cancel:hover {
+        background: #d0d0d0;
+        color: var(--charcoal);
+        transform: translateY(-2px);
+    }
+
+    .btn-delete-account {
+        width: 100%;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        background: #d32f2f;
+        color: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        margin-top: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-delete-account:hover {
+        background: #b71c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    }
+
+    /* Custom Modal */
+    .custom-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+    }
+
+    .custom-modal.active {
+        display: flex;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-dialog {
+        background: white;
+        border-radius: 16px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease;
+        overflow: hidden;
+    }
+
+    .modal-header {
+        background: #d32f2f;
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0;
+    }
+
+    .modal-close {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background 0.2s ease;
+    }
+
+    .modal-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-body {
+        padding: 2rem;
+        font-size: 1.05rem;
+        color: var(--charcoal);
+        line-height: 1.6;
+    }
+
+    .modal-footer {
+        padding: 1.5rem 2rem;
+        display: flex;
+        gap: 1rem;
+        border-top: 1px solid #f0f0f0;
+        justify-content: flex-end;
+    }
+
+    .modal-btn {
+        padding: 0.75rem 2rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .modal-btn-cancel {
+        background: #e0e0e0;
+        color: var(--charcoal);
+    }
+
+    .modal-btn-cancel:hover {
+        background: #d0d0d0;
+    }
+
+    .modal-btn-delete {
+        background: #d32f2f;
+        color: white;
+    }
+
+    .modal-btn-delete:hover {
+        background: #b71c1c;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .form-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="profile-page">
+    <div class="page-header">
+        <h1 class="page-title">Edit Profile</h1>
+        <p class="page-subtitle">Update your personal information</p>
+    </div>
+
+    <div class="form-container">
+        <div class="form-card">
+            <div class="profile-image-container">
+                <img src="/uploads/users/{{ app.user.image }}" class="profile-image" alt="Profile">
+            </div>
+
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+            <div class="form-grid">
+                <div class="form-group">
+                    {{ form_label(form.prenom, 'First Name') }}
+                    {{ form_widget(form.prenom, {'attr': {'class': 'form-control' ~ (form.prenom.vars.errors|length ? ' is-invalid' : ''), 'placeholder': 'Enter first name'}}) }}
+                    {% for error in form.prenom.vars.errors %}
+                        <div class="invalid-feedback">{{ error.message }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.nom, 'Last Name') }}
+                    {{ form_widget(form.nom, {'attr': {'class': 'form-control' ~ (form.nom.vars.errors|length ? ' is-invalid' : ''), 'placeholder': 'Enter last name'}}) }}
+                    {% for error in form.nom.vars.errors %}
+                        <div class="invalid-feedback">{{ error.message }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group full-width">
+                    {{ form_label(form.email, 'Email Address') }}
+                    {{ form_widget(form.email, {'attr': {'class': 'form-control' ~ (form.email.vars.errors|length ? ' is-invalid' : '')}}) }}
+                </div>
+
+                <div class="form-group full-width">
+                    {{ form_label(form.plainPassword, 'New Password') }}
+                    {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control' ~ (form.plainPassword.vars.errors|length ? ' is-invalid' : ''), 'placeholder': 'Leave blank to keep current password'}}) }}
+                    {% for error in form.plainPassword.vars.errors %}
+                        <div class="invalid-feedback">{{ error.message }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group full-width">
+                    {{ form_label(form.telephone, 'Phone Number') }}
+                    <div class="input-group">
+                        <span class="input-group-text">+216</span>
+                        {{ form_widget(form.telephone, {'attr': {'class': 'form-control' ~ (form.telephone.vars.errors|length ? ' is-invalid' : ''), 'placeholder':'12345678'}}) }}
+                    </div>
+                    {% for error in form.telephone.vars.errors %}
+                        <div class="invalid-feedback">{{ error.message }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.street, 'Street Address') }}
+                    {{ form_widget(form.street, {'attr': {'class':'form-control' ~ (form.street.vars.errors|length ? ' is-invalid' : ''), 'placeholder': 'Enter street address'}}) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.city, 'City') }}
+                    {{ form_widget(form.city, {'attr': {'class':'form-control' ~ (form.city.vars.errors|length ? ' is-invalid' : ''), 'placeholder': 'Enter city'}}) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.postalCode, 'Postal Code') }}
+                    {{ form_widget(form.postalCode, {'attr': {'class':'form-control' ~ (form.postalCode.vars.errors|length ? ' is-invalid' : ''), 'placeholder': 'Enter postal code'}}) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.imageFile, 'Profile Image') }}
+                    {{ form_widget(form.imageFile, {'attr': {'class': 'form-control' ~ (form.imageFile.vars.errors|length ? ' is-invalid' : '')}}) }}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-form btn-submit">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Save Changes
+                </button>
+
+                <a href="{{ path('app_home') }}" class="btn-form btn-cancel">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Cancel
+                </a>
+            </div>
+
+            {% if showCurrentPasswordModal and newPasswordField is defined %}
+                <input type="hidden" name="plainPasswordHidden" value="{{ newPasswordField }}">
+            {% endif %}
+
+            {{ form_end(form) }}
+
+            <button class="btn-delete-account" onclick="openDeleteModal()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete My Account
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div id="deleteAccountModal" class="custom-modal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                Confirm Account Deletion
+            </h5>
+            <button type="button" class="modal-close" onclick="closeDeleteModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <p><strong>This action is permanent and cannot be undone.</strong></p>
+            <p>All your data, including orders and profile information, will be permanently removed. Are you absolutely sure you want to delete your account?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <form action="{{ path('app_profile_delete') }}" method="POST" style="display: inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
+                <button type="submit" class="modal-btn modal-btn-delete">Yes, Delete My Account</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openDeleteModal() {
+    const modal = document.getElementById('deleteAccountModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteAccountModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Close modal when clicking outside
+document.getElementById('deleteAccountModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeDeleteModal();
+    }
+});
+</script>
+
+{% if showCurrentPasswordModal %}
+<script>
+// Handle current password modal if needed
+// Add your existing password confirmation logic here
+</script>
+{% endif %}
+{% endblock %}
