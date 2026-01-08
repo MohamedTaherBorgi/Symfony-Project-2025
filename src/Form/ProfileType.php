@@ -27,12 +27,13 @@ class ProfileType extends AbstractType
                     new Assert\Length([
                         'min' => 2,
                         'max' => 255,
-                        'minMessage' => 'First name must be at least {{ limit }} characters',
-                        'maxMessage' => 'First name cannot be longer than {{ limit }} characters',
+                    ]),
+                    new Assert\Regex([
+                        'pattern' => '/^[A-Za-zÀ-ÿ\s\'-]+$/',
+                        'message' => 'First name must contain only letters',
                     ]),
                 ],
-                'attr' => ['class' => 'form-control'],
-                'empty_data' => '',  // <-- this ensures null becomes empty string
+                'empty_data' => '',
             ])
             ->add('nom', TextType::class, [
                 'label' => 'Last Name',
@@ -41,12 +42,13 @@ class ProfileType extends AbstractType
                     new Assert\Length([
                         'min' => 2,
                         'max' => 255,
-                        'minMessage' => 'Last name must be at least {{ limit }} characters',
-                        'maxMessage' => 'Last name cannot be longer than {{ limit }} characters',
+                    ]),
+                    new Assert\Regex([
+                        'pattern' => '/^[A-Za-zÀ-ÿ\s\'-]+$/',
+                        'message' => 'Last name must contain only letters',
                     ]),
                 ],
-                'attr' => ['class' => 'form-control'],
-                'empty_data' => '',  // <-- this ensures null becomes empty string
+                'empty_data' => '',
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
@@ -76,8 +78,13 @@ class ProfileType extends AbstractType
             ])
             ->add('city', TextType::class, [
                 'label' => 'City',
-                'constraints' => [new Assert\NotBlank(['message' => 'Please enter your city'])],
-                'attr' => ['class' => 'form-control'],
+                'constraints' => [
+                    new Assert\NotBlank(['message' => 'Please enter your city']),
+                    new Assert\Regex([
+                        'pattern' => '/^[A-Za-zÀ-ÿ\s\'-]+$/',
+                        'message' => 'City must contain only letters',
+                    ]),
+                ],
             ])
             ->add('postalCode', TextType::class, [
                 'label' => 'Postal Code',

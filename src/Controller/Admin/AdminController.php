@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Category;
 use App\Entity\Order;
+use App\Entity\OrderItem;
 use App\Entity\Product;
 use App\Entity\User;
 use App\Form\ProductType;
@@ -82,6 +83,7 @@ class AdminController extends AbstractController
             $em->persist($product);
             $em->flush();
 
+            $this->addFlash('success', 'Product created successfully!');
             return $this->redirectToRoute('admin_products');
         }
 
@@ -112,6 +114,7 @@ class AdminController extends AbstractController
             }
 
             $em->flush();
+            $this->addFlash('success', 'Product updated successfully!');
             return $this->redirectToRoute('admin_products');
         }
 
@@ -124,9 +127,19 @@ class AdminController extends AbstractController
     #[Route('/products/{id}/delete', name: 'admin_product_delete', methods: ['POST'])]
     public function deleteProduct(Product $product, EntityManagerInterface $em): Response
     {
+        // Check if product has order items
+        $orderItems = $em->getRepository(OrderItem::class)->findBy(['product' => $product]);
+        
+        if (count($orderItems) > 0) {
+            $this->addFlash('error', 'Cannot delete product "' . $product->getNom() . '" because it exists in ' . count($orderItems) . ' order(s). The product is part of order history.');
+            return $this->redirectToRoute('admin_products');
+        }
+
+        $productName = $product->getNom();
         $em->remove($product);
         $em->flush();
 
+        $this->addFlash('success', 'Product "' . $productName . '" deleted successfully!');
         return $this->redirectToRoute('admin_products');
     }
 
@@ -152,6 +165,7 @@ class AdminController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($category);
             $em->flush();
+            $this->addFlash('success', 'Category created successfully!');
             return $this->redirectToRoute('admin_categories');
         }
 
@@ -168,6 +182,7 @@ class AdminController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
+            $this->addFlash('success', 'Category updated successfully!');
             return $this->redirectToRoute('admin_categories');
         }
 
@@ -178,11 +193,25 @@ class AdminController extends AbstractController
     }
 
     #[Route('/categories/{id}/delete', name: 'admin_category_delete', methods: ['POST'])]
-    public function deleteCategory(Category $category, EntityManagerInterface $em, Request $request): Response
+    public function deleteCategory(Category $category, EntityManagerInterface $em, Request $request, ProductRepository $productRepository): Response
     {
         if ($this->isCsrfTokenValid('delete_category_' . $category->getId(), $request->get('_token'))) {
+            
+            // Check if category has products
+            $products = $productRepository->findBy(['category' => $category]);
+            
+            if (count($products) > 0) {
+                $this->addFlash('error', 'Cannot delete category "' . $category->getNom() . '" because it has ' . count($products) . ' product(s) associated with it. Please delete or reassign these products first.');
+                return $this->redirectToRoute('admin_categories');
+            }
+            
+            $categoryName = $category->getNom();
             $em->remove($category);
             $em->flush();
+            
+            $this->addFlash('success', 'Category "' . $categoryName . '" deleted successfully!');
+        } else {
+            $this->addFlash('error', 'Invalid CSRF token.');
         }
 
         return $this->redirectToRoute('admin_categories');
@@ -221,7 +250,6 @@ class AdminController extends AbstractController
 
         $this->addFlash('success', 'Order status updated successfully!');
 
-        // ✅ Redirect to admin orders index
         return $this->redirectToRoute('admin_orders');
     }
 
@@ -233,12 +261,10 @@ class AdminController extends AbstractController
     public function users(UserRepository $userRepository, Request $request, EntityManagerInterface $em): Response
     {
         $users = $userRepository->findAll();
-        $currentUserId = $this->getUser()->getId(); // logged-in admin
+        $currentUserId = $this->getUser()->getId();
 
-        // Handle role update
         if ($request->isMethod('POST')) {
             foreach ($users as $user) {
-                // Skip logged-in admin
                 if ($user->getId() === $currentUserId) {
                     continue;
                 }

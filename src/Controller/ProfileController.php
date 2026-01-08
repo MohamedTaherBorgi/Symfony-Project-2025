@@ -31,6 +31,7 @@ class ProfileController extends AbstractController
             throw new AccessDeniedHttpException();
         }
 
+        // Save original values
         $originalData = [
             'prenom' => $user->getPrenom(),
             'nom' => $user->getNom(),
@@ -45,9 +46,12 @@ class ProfileController extends AbstractController
         $form->handleRequest($request);
 
         $showModal = false;
-        $newPasswordField = null;
+        $passwordError = null;
+        $newPassword = null;
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // Detect changes
             $changed = false;
             foreach ($originalData as $field => $value) {
                 if ($user->{'get' . ucfirst($field)}() !== $value) {
@@ -61,36 +65,45 @@ class ProfileController extends AbstractController
                 $changed = true;
             }
 
+            // If user confirmed password → VERIFY IT
             if ($request->request->has('currentPasswordConfirmed')) {
-                $newPasswordField = $request->request->get('plainPasswordHidden');
-                if ($newPasswordField) {
-                    $user->setPassword($passwordHasher->hashPassword($user, $newPasswordField));
+
+                $currentPassword = $request->request->get('currentPasswordConfirmed');
+
+                if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+                    // ❌ WRONG PASSWORD
+                    $showModal = true;
+                    $passwordError = 'Incorrect current password.';
+                } else {
+                    // ✅ PASSWORD OK → APPLY CHANGES
+                    if ($newPassword) {
+                        $user->setPassword(
+                            $passwordHasher->hashPassword($user, $newPassword)
+                        );
+                    }
+
+                    $imageFile = $form->get('imageFile')->getData();
+                    if ($imageFile) {
+                        $filename = uniqid() . '.' . $imageFile->guessExtension();
+                        $imageFile->move($this->getParameter('user_images'), $filename);
+                        $user->setImage($filename);
+                    }
+
+                    $em->flush();
+                    $this->addFlash('success', 'Profile updated successfully');
+                    return $this->redirectToRoute('app_profile_edit');
                 }
+
             } elseif ($changed) {
+                // Ask for password confirmation
                 $showModal = true;
-                $newPasswordField = $newPassword;
-            }
-
-            if (!$showModal) {
-                $imageFile = $form->get('imageFile')->getData();
-                if ($imageFile) {
-                    $filename = uniqid() . '.' . $imageFile->guessExtension();
-                    $imageFile->move($this->getParameter('user_images'), $filename);
-                    $user->setImage($filename);
-                }
-
-                $em->persist($user);
-                $em->flush();
-
-                $this->addFlash('success', 'Profile updated successfully');
-                return $this->redirectToRoute('app_profile_edit');
             }
         }
 
         return $this->render('profile/edit.html.twig', [
             'form' => $form,
             'showCurrentPasswordModal' => $showModal,
-            'newPasswordField' => $newPasswordField,
+            'passwordError' => $passwordError,
         ]);
     }
 
@@ -98,11 +111,12 @@ class ProfileController extends AbstractController
     public function delete(
         Request                   $request,
         CsrfTokenManagerInterface $csrfTokenManager,
-        EntityManagerInterface    $entityManager,
+        EntityManagerInterface    $em,
         SessionInterface          $session,
         TokenStorageInterface     $tokenStorage
     ): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
 
         if (!$user) {
@@ -116,15 +130,28 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('app_profile_edit');
         }
 
-        // Delete the user
-        $entityManager->remove($user);
-        $entityManager->flush();
+        /* ===============================
+           1️⃣ DELETE USER ORDERS FIRST
+           =============================== */
+        $orders = $em->getRepository(\App\Entity\Order::class)
+            ->findBy(['user' => $user]);
 
-        // Log out the deleted user
+        foreach ($orders as $order) {
+            $em->remove($order);
+        }
+
+        /* ===============================
+           2️⃣ DELETE USER
+           =============================== */
+        $em->remove($user);
+        $em->flush();
+
+        /* ===============================
+           3️⃣ LOGOUT + SESSION CLEANUP
+           =============================== */
         $tokenStorage->setToken(null);
         $session->invalidate();
 
-        $this->addFlash('success', 'Your account has been deleted.');
         return $this->redirectToRoute('app_home');
     }
 }

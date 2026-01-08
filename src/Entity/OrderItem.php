@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use App\Repository\OrderItemRepository;
@@ -17,7 +18,7 @@ class OrderItem
     private ?Order $orderRef = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Product $product = null;
 
     #[ORM\Column]
@@ -28,6 +29,16 @@ class OrderItem
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private ?string $subtotal = null;
+
+    // New fields to preserve product info even after product deletion
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $productName = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $productDescription = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $productImage = null;
 
     public function getId(): ?int
     {
@@ -86,6 +97,39 @@ class OrderItem
     public function setSubtotal(string $subtotal): self
     {
         $this->subtotal = $subtotal;
+        return $this;
+    }
+
+    public function getProductName(): ?string
+    {
+        return $this->productName;
+    }
+
+    public function setProductName(?string $productName): self
+    {
+        $this->productName = $productName;
+        return $this;
+    }
+
+    public function getProductDescription(): ?string
+    {
+        return $this->productDescription;
+    }
+
+    public function setProductDescription(?string $productDescription): self
+    {
+        $this->productDescription = $productDescription;
+        return $this;
+    }
+
+    public function getProductImage(): ?string
+    {
+        return $this->productImage;
+    }
+
+    public function setProductImage(?string $productImage): self
+    {
+        $this->productImage = $productImage;
         return $this;
     }
 }

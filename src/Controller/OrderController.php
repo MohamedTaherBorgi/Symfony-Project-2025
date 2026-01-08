@@ -82,6 +82,11 @@ class OrderController extends AbstractController
                 $orderItem->setUnitPrice($product->getPrix());
                 $orderItem->setSubtotal($subtotal);
                 $orderItem->setOrderRef($order);
+                
+                // Save product details for history
+                $orderItem->setProductName($product->getNom());
+                $orderItem->setProductDescription($product->getDescription());
+                $orderItem->setProductImage($product->getImage());
 
                 $em->persist($orderItem);
 
@@ -143,7 +148,6 @@ class OrderController extends AbstractController
     #[Route('/{id}', name: 'order_show')]
     public function show(Order $order): Response
     {
-        // Ensure the current user owns the order
         $this->denyAccessUnlessGranted('ROLE_CLIENT');
         if ($order->getUser() !== $this->getUser()) {
             throw $this->createAccessDeniedException('You cannot view this order.');

@@ -30,7 +30,9 @@ class CartController extends AbstractController
             ->withValue(json_encode($cart))
             ->withExpires(time() + self::COOKIE_LIFETIME)
             ->withPath('/')
-            ->withHttpOnly(true);
+            ->withHttpOnly(true)
+            ->withSecure(false)  // Set to true if using HTTPS
+            ->withSameSite(Cookie::SAMESITE_LAX);
 
         $response->headers->setCookie($cookie);
     }
@@ -70,16 +72,31 @@ class CartController extends AbstractController
         ]);
     }
 
-    #[Route('/add/{id}', name: 'cart_add')]
+    #[Route('/add/{id}', name: 'cart_add', methods: ['GET', 'POST'])]
     public function add(int $id, Request $request, ProductRepository $productRepository): Response
     {
         $product = $productRepository->find($id);
         if (!$product) {
-            throw $this->createNotFoundException('Product not found');
+            $this->addFlash('error', 'Product not found');
+            return $this->redirectToRoute('product_index');
+        }
+
+        // Check stock
+        if ($product->getStock() <= 0) {
+            $this->addFlash('error', 'Product is out of stock');
+            return $this->redirectToRoute('product_show', ['id' => $id]);
         }
 
         $cart = $this->getCart($request);
-        $cart[$id] = ($cart[$id] ?? 0) + 1;
+        
+        // Check if adding one more would exceed stock
+        $currentQuantity = $cart[$id] ?? 0;
+        if ($currentQuantity >= $product->getStock()) {
+            $this->addFlash('warning', 'Cannot add more. Maximum stock reached.');
+            return $this->redirectToRoute('cart_index');
+        }
+        
+        $cart[$id] = $currentQuantity + 1;
 
         $response = $this->redirectToRoute('cart_index');
         $this->saveCart($response, $cart);
@@ -87,7 +104,7 @@ class CartController extends AbstractController
         return $response;
     }
 
-    #[Route('/remove/{id}', name: 'cart_remove')]
+    #[Route('/remove/{id}', name: 'cart_remove', methods: ['GET', 'POST'])]
     public function remove(int $id, Request $request): Response
     {
         $cart = $this->getCart($request);
@@ -101,16 +118,28 @@ class CartController extends AbstractController
         return $response;
     }
 
-    #[Route('/update/{id}/{action}', name: 'cart_update')]
-    public function update(int $id, string $action, Request $request): Response
+    #[Route('/update/{id}/{action}', name: 'cart_update', methods: ['GET', 'POST'])]
+    public function update(int $id, string $action, Request $request, ProductRepository $productRepository): Response
     {
         $cart = $this->getCart($request);
         if (!isset($cart[$id])) {
             return $this->redirectToRoute('cart_index');
         }
 
+        $product = $productRepository->find($id);
+        if (!$product) {
+            unset($cart[$id]);
+            $response = $this->redirectToRoute('cart_index');
+            $this->saveCart($response, $cart);
+            return $response;
+        }
+
         if ($action === 'increase') {
-            $cart[$id]++;
+            if ($cart[$id] < $product->getStock()) {
+                $cart[$id]++;
+            } else {
+                $this->addFlash('warning', 'Maximum stock reached for this product.');
+            }
         } elseif ($action === 'decrease') {
             $cart[$id] = max(1, $cart[$id] - 1);
         }
@@ -120,7 +149,7 @@ class CartController extends AbstractController
         return $response;
     }
 
-    #[Route('/clear', name: 'cart_clear')]
+    #[Route('/clear', name: 'cart_clear', methods: ['GET', 'POST'])]
     public function clear(Request $request): Response
     {
         $response = $this->redirectToRoute('cart_index');

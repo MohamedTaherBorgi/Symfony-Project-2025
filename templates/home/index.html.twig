@@ -1,36 +1,532 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+<style>
+    /* Ecosia-Inspired Hero Section */
+    .ecosia-hero {
+        position: relative;
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: 
+            linear-gradient(135deg, rgba(26, 58, 46, 0.85) 0%, rgba(45, 95, 74, 0.75) 100%),
+            url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2000') center/cover no-repeat;
+        margin: -2rem -100vw 4rem;
+        padding: 4rem 100vw;
+        overflow: hidden;
+    }
+
+    .ecosia-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 30% 40%, rgba(107, 144, 128, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 70% 60%, rgba(164, 195, 178, 0.15) 0%, transparent 50%);
+        z-index: 0;
+    }
+
+    .hero-content-wrapper {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+        display: inline-block;
+        padding: 0.5rem 1.2rem;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        color: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .hero-main-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 4.5rem;
+        font-weight: 800;
+        color: white;
+        line-height: 1.15;
+        margin-bottom: 1.5rem;
+        letter-spacing: -1px;
+        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-main-title .accent {
+        color: #a4c3b2;
+        position: relative;
+    }
+
+    .hero-subtitle {
+        font-size: 1.35rem;
+        color: rgba(255, 255, 255, 0.95);
+        line-height: 1.7;
+        margin-bottom: 3rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        font-weight: 400;
+        text-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-cta-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.1rem 2.5rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 50px;
+        background: white;
+        color: var(--forest-deep);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-hero-primary:hover {
+        background: #f6fff8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+        color: var(--forest-deep);
+    }
+
+    .btn-hero-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.1rem 2.5rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-hero-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: white;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Impact Stats Section */
+    .impact-section {
+        background: white;
+        border-radius: 24px;
+        padding: 3rem 2rem;
+        margin: 4rem 0;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .impact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 3rem;
+        text-align: center;
+    }
+
+    .impact-item {
+        position: relative;
+    }
+
+    .impact-number {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--sage-primary);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .impact-label {
+        font-size: 0.95rem;
+        color: var(--charcoal);
+        font-weight: 500;
+    }
+
+    /* Products Section */
+    .products-section {
+        margin: 6rem 0;
+    }
+
+    .section-header-clean {
+        text-align: center;
+        margin-bottom: 3.5rem;
+    }
+
+    .section-tag {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        background: rgba(107, 144, 128, 0.1);
+        border-radius: 50px;
+        color: var(--sage-primary);
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 1rem;
+    }
+
+    .section-title-clean {
+        font-family: 'Playfair Display', serif;
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--forest-deep);
+        margin-bottom: 1rem;
+    }
+
+    .section-description {
+        font-size: 1.15rem;
+        color: var(--charcoal);
+        max-width: 650px;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+
+    /* Clean Product Cards */
+    .products-grid-clean {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+
+    .product-card-clean {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-card-clean:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-image-clean {
+        position: relative;
+        height: 280px;
+        overflow: hidden;
+        background: #f8f8f8;
+    }
+
+    .product-image-clean img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .product-card-clean:hover .product-image-clean img {
+        transform: scale(1.05);
+    }
+
+    .product-category-clean {
+        position: absolute;
+        top: 1.25rem;
+        left: 1.25rem;
+        padding: 0.45rem 1rem;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(8px);
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #3a4f42;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .product-body-clean {
+        padding: 1.75rem 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-title-clean {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #2c3e37;
+        margin-bottom: 0.65rem;
+        line-height: 1.35;
+    }
+
+    .product-desc-clean {
+        color: #6b7b75;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .product-footer-clean {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+    }
+
+    .product-price-clean {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #3a5a47;
+    }
+
+    .product-price-clean span {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #7a9b88;
+        margin-left: 0.2rem;
+    }
+
+    .btn-product-clean {
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.88rem;
+        border: none;
+        border-radius: 8px;
+        background: #5a7968;
+        color: white;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 6px rgba(90, 121, 104, 0.25);
+    }
+
+    .btn-product-clean:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(90, 121, 104, 0.35);
+        background: #4d6857;
+        color: white;
+    }
+
+    /* Empty State */
+    .empty-state-clean {
+        text-align: center;
+        padding: 6rem 2rem;
+        background: #f8f8f8;
+        border-radius: 24px;
+        margin: 3rem 0;
+    }
+
+    .empty-icon {
+        margin-bottom: 2rem;
+    }
+
+    .empty-icon svg {
+        opacity: 0.3;
+    }
+
+    .empty-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--forest-deep);
+        margin-bottom: 1rem;
+    }
+
+    .empty-description {
+        font-size: 1.1rem;
+        color: var(--charcoal);
+    }
+
+    /* Call to Action */
+    .cta-section {
+        text-align: center;
+        margin: 4rem 0;
+    }
+
+    @media (max-width: 768px) {
+        .ecosia-hero {
+            min-height: 60vh;
+            padding: 3rem 1rem;
+        }
+
+        .hero-main-title {
+            font-size: 2.8rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .hero-cta-group {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .btn-hero-primary,
+        .btn-hero-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .section-title-clean {
+            font-size: 2rem;
+        }
+
+        .impact-grid {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+        }
+
+        .products-grid-clean {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block body %}
-<div class="hero text-center">
-    <h1 class="display-4 fw-bold text-success">Welcome to EcoStore 🌿</h1>
-    <p class="lead text-muted">Discover sustainable, eco-friendly products for a better tomorrow</p>
-    <a href="{{ path('product_index') }}" class="btn btn-eco btn-lg mt-3">Explore Products</a>
+<!-- Ecosia-Inspired Hero -->
+<div class="ecosia-hero">
+    <div class="hero-content-wrapper">
+        <div class="hero-eyebrow">Sustainable Living</div>
+        
+        <h1 class="hero-main-title">
+            Shop Better for the <span class="accent">Planet</span>
+        </h1>
+        
+        <p class="hero-subtitle">
+            Every purchase you make supports a sustainable future. Discover eco-friendly products 
+            that make a real difference for our environment.
+        </p>
+        
+        <div class="hero-cta-group">
+            <a href="{{ path('product_index') }}" class="btn btn-hero-primary">
+                <span>Explore Products</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+            <a href="#products" class="btn btn-hero-secondary">
+                <span>Learn More</span>
+            </a>
+        </div>
+    </div>
 </div>
 
-<div class="row mt-5">
-    <div class="col-12">
-        <h2 class="text-center mb-4">Featured Products</h2>
-    </div>
-    {% for product in products|slice(0, 6) %}
-    <div class="col-md-4 mb-4">
-        <div class="card product-card h-100">
-            <div class="product-img">🌱</div>
-            <div class="card-body">
-                <span class="eco-badge">Eco-Friendly</span>
-                <h5 class="card-title mt-2">{{ product.nom }}</h5>
-                <p class="card-text text-muted">{{ product.description|slice(0, 80) }}...</p>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <span class="h5 text-success mb-0">{{ product.prix }} TND</span>
-                    <a href="{{ path('product_show', {id: product.id}) }}" class="btn btn-eco btn-sm">View Details</a>
-                </div>
+<!-- Impact Stats -->
+<div class="container">
+    <div class="impact-section">
+        <div class="impact-grid">
+            <div class="impact-item">
+                <div class="impact-number">{{ products|length }}+</div>
+                <div class="impact-label">Eco-Friendly Products</div>
+            </div>
+            <div class="impact-item">
+                <div class="impact-number">100%</div>
+                <div class="impact-label">Sustainable Materials</div>
+            </div>
+            <div class="impact-item">
+                <div class="impact-number">Zero</div>
+                <div class="impact-label">Plastic Waste</div>
             </div>
         </div>
     </div>
-    {% else %}
-    <div class="col-12 text-center text-muted py-5">
-        <p class="lead">No products available yet.</p>
-        <p>Add some products to get started!</p>
+</div>
+
+<!-- Products Section -->
+<div class="container">
+    <div class="products-section" id="products">
+        <div class="section-header-clean">
+            <div class="section-tag">Our Collection</div>
+            <h2 class="section-title-clean">Featured Products</h2>
+            <p class="section-description">
+                Carefully curated sustainable products that combine quality with environmental responsibility.
+            </p>
+        </div>
+
+        <div class="products-grid-clean">
+            {% for product in products|slice(0, 6) %}
+            <div class="product-card-clean">
+                <div class="product-image-clean">
+                    {% if product.image %}
+                        <img src="{{ asset('uploads/products/' ~ product.image) }}" alt="{{ product.nom }}">
+                    {% else %}
+                        <div class="d-flex align-items-center justify-content-center h-100" style="background: linear-gradient(135deg, rgba(107, 144, 128, 0.1), rgba(164, 195, 178, 0.1));">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8L12 2Z" fill="#6b9080" opacity="0.3"/>
+                            </svg>
+                        </div>
+                    {% endif %}
+                    <div class="product-category-clean">{{ product.category.nom }}</div>
+                </div>
+                
+                <div class="product-body-clean">
+                    <h3 class="product-title-clean">{{ product.nom }}</h3>
+                    <p class="product-desc-clean">
+                        {{ product.description|length > 90 ? product.description|slice(0, 90) ~ '...' : product.description }}
+                    </p>
+                    
+                    <div class="product-footer-clean">
+                        <div class="product-price-clean">
+                            {{ product.prix }} <span>TND</span>
+                        </div>
+                        <a href="{{ path('product_show', {id: product.id}) }}" class="btn btn-product-clean">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div style="grid-column: 1 / -1;">
+                <div class="empty-state-clean">
+                    <div class="empty-icon">
+                        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="#6b9080" stroke-width="1.5"/>
+                            <path d="M12 8V12L15 15" stroke="#6b9080" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="empty-title">No Products Yet</h3>
+                    <p class="empty-description">
+                        We're preparing amazing eco-friendly products for you. Check back soon!
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if products|length > 6 %}
+        <div class="cta-section">
+            <a href="{{ path('product_index') }}" class="btn btn-hero-primary">
+                <span>View All Products</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+        </div>
+        {% endif %}
     </div>
-    {% endfor %}
 </div>
 {% endblock %}
